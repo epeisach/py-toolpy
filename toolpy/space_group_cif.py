@@ -1,4 +1,4 @@
-text='''
+text = """
 data_NDB_SPACE_GROUP
 
 loop_
@@ -1140,4 +1140,4 @@ _ndb_space_group.trans[3][2]
 'R 3 2'           5   -1  0  0    0  0 -1    0 -1  0    0  0    0  0    0  0
 'R 3 2'           6    0  0 -1    0 -1  0   -1  0  0    0  0    0  0    0  0
 	         
-'''
+"""
