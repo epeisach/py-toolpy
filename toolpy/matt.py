@@ -2,7 +2,7 @@
 #  Calculate the Matthew coefficient and solvent content.
 #
 # =================================================================
-import os, sys, math
+import math
 import util
 from cifparse import cif2pdb
 

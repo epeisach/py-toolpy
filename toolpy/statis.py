@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
-import os, sys, math, shutil
+import os
+import math
 import util
 
 
@@ -271,7 +272,7 @@ def scatter_plot(file, col1, col2):
 
     #    print 'all data = ', len(data1)
     #    for x in data1: print x
-    col = 0
+    # col = 0
 
     xavg0, xdev0, xmin0, xmax0 = util.mean_dev(data1, col=0)
     xavg, xdev, xmin, xmax = util.mean_dev(data1, col=1)
@@ -661,20 +662,20 @@ def skewness_kurtosis(data, col, xavg, xdev):
         return 0, 0
 
     n = len(data)
-    m = int(n * 0.5)
-    nq1, nq3 = int(n * 0.15), int(n * 0.75)
-    np10, np90 = int(n * 0.10), int(n * 0.90)
+    # m = int(n * 0.5)
+    # nq1, nq3 = int(n * 0.15), int(n * 0.75)
+    # np10, np90 = int(n * 0.10), int(n * 0.90)
 
-    md = data[m][col]
-    q1, q3 = data[nq1][col], data[nq3][col]
-    p10, p90 = data[np10][col], data[np90][col]
+    # md = data[m][col]
+    # q1, q3 = data[nq1][col], data[nq3][col]
+    # p10, p90 = data[np10][col], data[np90][col]
 
-    skewness_q, skewness_p, kurtosis_p = 0, 0, 0
+    # skewness_q, skewness_p, kurtosis_p = 0, 0, 0
 
-    if (p90 - p10) != 0 and (q3 - q1) != 0:
-        skewness_q = ((q3 - md) - (md - q1)) / (q3 - q1)
-        skewness_p = ((p90 - md) - (md - p10)) / (p90 - p10)
-        kurtosis_p = 0.5 * (q3 - q1) / (p90 - p10)
+    # if (p90 - p10) != 0 and (q3 - q1) != 0:
+    #     skewness_q = ((q3 - md) - (md - q1)) / (q3 - q1)
+    #     skewness_p = ((p90 - md) - (md - p10)) / (p90 - p10)
+    #     kurtosis_p = 0.5 * (q3 - q1) / (p90 - p10)
 
     #    print m,  nq1, nq3, np10, np90, q1, q3, p10, p90, md , '<br>'
 
@@ -905,7 +906,6 @@ def add_percentile_rank(infile, coln):
         if x not in dic:
             dic[x] = p
 
-    nlist = []
     for x in flist:  # add percentile rank to col
         ss = x.strip().split()
         if not ss:

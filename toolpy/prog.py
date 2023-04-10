@@ -2,7 +2,7 @@
 # this module is a interface for all the external packages
 # ===========================================================
 
-import os, sys, string, shutil
+import os
 import util
 
 
@@ -66,7 +66,7 @@ def run_ccp4_contact(pdbfile, id):
     pdb_new = pdbfile + "_new"
     fp = open(pdbfile, "r")
     fw = open(pdb_new, "w")
-    delete_file("ccp4_contact.csh")
+    util.delete_file("ccp4_contact.csh")
     fwc = open("ccp4_contact.csh", "w")
     for x in fp:
         #        if id==0 and 'SCALE' in x[:6] : continue
@@ -96,10 +96,10 @@ def run_ccp4_contact(pdbfile, id):
     fwc.write(script)
     fwc.close()
 
-    arg = 'egrep "\[.*\]"  %s |wc -l' % log
+    arg = 'egrep "\[.*\]"  %s |wc -l' % log  # noqa: W605
     ncont = int(os.popen(arg).read())
     print("Crystal contacts for %s (<%.1fA) = %d" % (pdbfile, limit, ncont))
-    delete_file(pdb_new)
+    util.delete_file(pdb_new)
     # if ncont < 30: delete_file(log)
     return ncont
 
@@ -147,7 +147,7 @@ def gnu_plot1(file, xlabel, ylabel, title, plot):
 
     plot_gnu = """
 #set terminal jpeg large size 840,640 #transparent nocrop enhanced font arial 8 size 420,320
-set terminal png  
+set terminal png
 set output '%s.png'
 #set boxwidth 0.5 relative
 #set style histogram clustered gap 1 title offset 0, 0, 0
@@ -160,21 +160,21 @@ set key  left top
 set grid ytics
 set size 1.0,1.0
 set autoscale
-set xtics rotate by 90 
+set xtics rotate by 90
 set ytics
 set xlabel "%s"
 set ylabel "%s"
 set title "%s"
 
 #set colorbox vertical origin screen 0.9, 0.2, 0 size screen 0.05, 0.6, 0 bdefault
-#plot 'struct_growth.data' using 2:xtic(1) t "all",'' u 3 t "altered"    
+#plot 'struct_growth.data' using 2:xtic(1) t "all",'' u 3 t "altered"
 #plot 'filename'   using 1:2:3:xtic(1) t "hell" with  yerrorlines, '' u 1:4:5 t "altered"   with  yerrorlines
 #plot 'datafile'   using 1:2:xtic(1) t "hell",  '' u 1:4:5 t "altered"   with  yerrorlines
 
-plot '%s'  %s 
+plot '%s'  %s
 
 set term x11
-#replot 
+#replot
 #pause 10
 
 """ % (
@@ -216,21 +216,21 @@ set key  left top
 set grid ytics
 set size 1.0,1.0
 set autoscale
-#set xtics rotate by 90 
+#set xtics rotate by 90
 set ytics
 set xlabel "%s"
 set ylabel "%s"
 set title "%s"
 
 #set colorbox vertical origin screen 0.9, 0.2, 0 size screen 0.05, 0.6, 0 bdefault
-#plot 'struct_growth.data' using 2:xtic(1) t "all",'' u 3 t "altered"    
+#plot 'struct_growth.data' using 2:xtic(1) t "all",'' u 3 t "altered"
 #plot 'filename'   using 1:2:3:xtic(1) t "hell" with  yerrorlines, '' u 1:4:5 t "altered"   with  yerrorlines
 #plot 'datafile'   using 1:2:xtic(1) t "hell",  '' u 1:4:5 t "altered"   with  yerrorlines
 
-plot '%s'  %s 
+plot '%s'  %s
 
 set term x11
-#replot 
+#replot
 #pause 10
 
 """ % (
@@ -285,9 +285,9 @@ def do_mr(nn, narg, arg):
   phaser << eof
   TITLe beta blip automatic
   MODE MR_AUTO
-  HKLIn %s 
+  HKLIn %s
   LABIn F=FP SIGF=SIGFP
-  ENSEmble beta PDB %s IDENtity %s  
+  ENSEmble beta PDB %s IDENtity %s
 #  ENSEmble blip PDB blip.pdb IDENtity 100
 #  COMPosition PROTein SEQuence beta.seq NUM 1 #beta
 #  COMPosition PROTein SEQuence blip.seq NUM 1 #blip
@@ -304,7 +304,6 @@ def do_mr(nn, narg, arg):
 
     if prog.lower() == "epmr":
         print("Doing MR by epmr ...")
-        mol_copy = ""
         arg = "epmr %s %s -w 1 -o eprm_mr -n %s  > epmr.log" % (sf, pdb, nmol)
         os.system(arg)
         print("EPMR OUTPUT = eprm_mr.best.pdb ")

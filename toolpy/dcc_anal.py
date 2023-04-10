@@ -3,13 +3,16 @@
 #   This module is to analyse the data items calculated from dcc
 #  (an independent one)
 # =================================================================
-import os, sys, math
-import cifparse as cif, util
+import sys
+import math
+import cifparse as cif
+import util
 
 
 def process(args):
     # print(args)
-    flist, file, vlist = "", "", []
+    flist, file = "", ""
+    # vlist = []
     for i, x in enumerate(args):
         if "-file" in x:
             file = args[i + 1]
@@ -22,7 +25,7 @@ def process(args):
             print("doing analysis")
 
     if file:
-        vlist = get_list(file)
+        # vlist = get_list(file)
         return
     elif flist:
         all_value = get_all_item(flist)
@@ -41,7 +44,8 @@ def get_matt_coeff(file, id):
     cell = [1, 1, 1, 1, 1, 1]
     sym = "X"
     res, atom = [], []
-    amass, hmass = 0, 0
+    amass = 0
+    # hmass = 0
 
     for x in fp:
         if "REMARK 290 " in x[:12] and "555" in x and "," in x[23:32]:
@@ -223,7 +227,7 @@ def get_list(file):
     nmtx = cif.parse_values(items, values, "_pdbx_density.mtrix_number")
     matt = cif.parse_values(items, values, "_pdbx_density.Matthew_coeff")
     solv = cif.parse_values(items, values, "_pdbx_density.solvent_content")
-    dpix = cif.parse_values(items, values, "_pdbx_density.Cruickshank_dpi_xyz")
+    # dpix = cif.parse_values(items, values, "_pdbx_density.Cruickshank_dpi_xyz")
     rtwin = cif.parse_values(items, values, "_pdbx_density.reflns_twin")
     xtwin = cif.parse_values(items, values, "_pdbx_density.twin_by_xtriage")
     tmp = cif.parse_values(items, values, "_pdbx_density.iso_B_value_type")
@@ -238,7 +242,7 @@ def get_list(file):
     # looped
     items, values = cif.cifparse(flist, "_pdbx_density_corr.")
     prog = cif.parse_values(items, values, "_pdbx_density_corr.program")
-    resh = cif.parse_values(items, values, "_pdbx_density_corr.ls_d_res_high")
+    # resh = cif.parse_values(items, values, "_pdbx_density_corr.ls_d_res_high")
     rwork = cif.parse_values(items, values, "_pdbx_density_corr.ls_R_factor_R_work")
     rfree = cif.parse_values(items, values, "_pdbx_density_corr.ls_R_factor_R_free")
     fcc = cif.parse_values(items, values, "_pdbx_density_corr.correlation_coeff_Fo_to_Fc")
@@ -252,7 +256,9 @@ def get_list(file):
             nc = i
             break
 
-    rprog, cprog = prog[nr].replace(" ", ""), prog[nc]
+    rprog = prog[nr].replace(" ", "")
+    # cprog = prog[nc]
+
     crw, crf, fcc, rsr, dcc = rwork[nc], rfree[nc], fcc[nc], rsr[nc], dcc[nc]
     rw_crw = "?"
     if util.is_number(rw[0]) and util.is_number(crw):

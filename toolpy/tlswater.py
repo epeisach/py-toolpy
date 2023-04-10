@@ -2,8 +2,9 @@
 #   This module is tls related
 # ==================================================
 
-import os, sys, math
-import util, prog, parse
+import math
+import util
+import prog
 
 
 def compare_r_tls_water(pdbfile_inp, sffile):
@@ -14,7 +15,7 @@ def compare_r_tls_water(pdbfile_inp, sffile):
     pdbfile = rid_of_anisou(pdbfile_inp)
 
     pdbfile_new = find_tls_water(pdbfile)
-    out2 = prog.run_dcc(pdbfile_new, sffile, "")
+    out2_ = prog.run_dcc(pdbfile_new, sffile, "")  # noqa: F841
 
     util.delete_file(pdbfile)
 

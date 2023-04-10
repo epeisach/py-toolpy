@@ -2,7 +2,6 @@
 # this module is a interface to parse values from a log file
 # ===========================================================
 
-import sys, math
 import util
 import cifparse as cif
 
@@ -81,9 +80,9 @@ def ncs_matrix(flist):
         return []
 
     for i in range(len(b11)):
-        idd = " "
-        if code[i] == "given":
-            idd = "1"
+        # idd = " "
+        # if code[i] == "given":
+        #     idd = "1"
         mt1 = [float(x) for x in (b11[i], b12[i], b13[i], t1[i]) if util.is_number(x)]
         mt2 = [float(x) for x in (b21[i], b22[i], b23[i], t2[i]) if util.is_number(x)]
         mt3 = [float(x) for x in (b31[i], b32[i], b33[i], t3[i]) if util.is_number(x)]
@@ -143,7 +142,7 @@ def atom_site(flist):
 
     items, values = cif.cifparse(flist, "_atom_site.")  # a loop
 
-    group1 = cif.parse_values(items, values, "_atom_site.group_PDB")
+    # group1 = cif.parse_values(items, values, "_atom_site.group_PDB")
     natm = cif.parse_values(items, values, "_atom_site.id")
     symbol1 = cif.parse_values(items, values, "_atom_site.type_symbol")
     if not symbol1:
@@ -212,9 +211,9 @@ def val_from_dcc(outf):
     flist = open(outf, "r").readlines()
 
     items, values = cif.cifparse(flist, "_pdbx_density.")
-    res = cif.parse_values(items, values, "_pdbx_density.ls_d_res_high")
-    rw = cif.parse_values(items, values, "_pdbx_density.R_value_R_work")
-    rf = cif.parse_values(items, values, "_pdbx_density.R_value_R_free")
+    # res = cif.parse_values(items, values, "_pdbx_density.ls_d_res_high")
+    # rw = cif.parse_values(items, values, "_pdbx_density.R_value_R_work")
+    # rf = cif.parse_values(items, values, "_pdbx_density.R_value_R_free")
     biso = cif.parse_values(items, values, "_pdbx_density.Biso_mean")
     bwil = cif.parse_values(items, values, "_pdbx_density.B_wilson")
     l2 = cif.parse_values(items, values, "_pdbx_density.Padilla-Yeates_L2_mean")

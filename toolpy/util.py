@@ -3,7 +3,10 @@
 # ===========================================================
 
 
-import os, math, shutil
+import os
+import math
+import shutil
+import sys
 
 # from  config import *
 
@@ -344,12 +347,12 @@ def residue():
     return res
 
 
-##########################################################
-def perror(info):
-    """print error messages"""
-    if info not in ERRLOG:
-        ERRLOG.append(info)
-        print(info.strip())
+# ##########################################################
+# def perror(info):
+#     """print error messages"""
+#     if info not in ERRLOG:
+#         ERRLOG.append(info)
+#         print(info.strip())
 
 
 ##########################################################
@@ -481,7 +484,7 @@ def get_file_by_pdbid(pdbid_in, idd):
 
     #    pth='/net/data/remediation-alt/ftp-v4.0/pdb/data/structures/divided'
     pth = "/net/ftp_tree_v5/ftp-v5.0/pdb/data/structures/divided/"
-    www_path = "http://www.rcsb.org/pdb/files"
+    # www_path = "http://www.rcsb.org/pdb/files"
 
     pdbid = pdbid_in.lower()
     if len(pdbid) != 4:

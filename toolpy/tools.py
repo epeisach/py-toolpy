@@ -1,21 +1,30 @@
 #!/usr/bin/env python
 
-import os, sys, math, shutil
+import os
+import sys
+import math
 from time import time
-import prog, sf_util, util, matt, contact, ref_util, statis
-import tlswater as tls, cifparse as cif
+import prog
+import sf_util
+import util
+import matt
+import contact
+import ref_util
+import statis
+import tlswater as tls
+import cifparse as cif
 
 # import test_cython
 
 
 def usage():
     content = """
-    
+
 ###############################################################################
 usage: tool  [option] file
 
 This utility tool is to perform various jobs (created 2010-12-03)
-    
+
 *. tool -stat filename  xcol=?, ycol=?
       optional options:  xlabel=?, ylabel=?, xrange=? ?, yrange=? ?, title=?
       calculate statistics (min,max,mean,dev,skew, Kurtosis) and plot graphs.
@@ -24,29 +33,29 @@ This utility tool is to perform various jobs (created 2010-12-03)
          b). For data correlations: xcol=?, ycol=? must be given.
 
 *. tool -changeB pdbfile  const (or b11 b22 b33 b12 b13 b23)
-       add a constant to Biso or (ANISOU) to pdb. (refmac V5.2 make B<0 with TLS) 
-        
+       add a constant to Biso or (ANISOU) to pdb. (refmac V5.2 make B<0 with TLS)
+
 *. tool -contact pdbfile (id)  #calculate crystal contact in PDB (by ccp4)
-       (id=0, use crystal frame (remove SCALE); id=1, use SCALE in PDB) 
-    
+       (id=0, use crystal frame (remove SCALE); id=1, use SCALE in PDB)
+
 *. tool -res  xyzfile  #reorder residue number sequentially
        if add A4_B5 after pdbfile, chain A 4 will be started from chain B 5
 
-*. tool -pick file1 file2  #grep items from first column of file1 and 
+*. tool -pick file1 file2  #grep items from first column of file1 and
       extract the lines in file2 containing the item.
 
 *. tool -mr285  xyzfile  sffile  # (07/15/2011)
-      coord. not in the crystal frame. Use MR to get new xyz and align the 
+      coord. not in the crystal frame. Use MR to get new xyz and align the
       original xyz to the new_xyz to get Matrix(X0). Then generate Remark 285.
-    
+
 *. tool -285  pdbfile1 pdbfile2  # (07/15/2011)
       coord. shift off crystal frame. pre_generate (rigid body + refine) pdbfile2
       Align pdbfile1 to pdbfile2 to get Matrix(X0). Then generate Remark 285.
-    
+
 *. tool -twin  sffile  ( -xtriage )  #(06/12/2012)
       analyze truncate results and make plots for twin/intesity/Wilson.
      (Add pdbfile after -twin , if no cell in the sffile)
-    
+
 *. tool -calc_sym  sffile    #(07/06/2012)
       use pointless to find best space group. (Add pdbfile, if no cell in sffile)
 
@@ -59,12 +68,12 @@ This utility tool is to perform various jobs (created 2010-12-03)
        multipile structure alignment by superpose. If no output, default superpose.out
 
 *. tool -mr prog=PROG, pdb=pdbfile, sf=sffile, nmol=1    #(2017-6-31)
-       Do MR (program=epmr|phaser|molrep   , nmol=numb of molecule) 
-       
+       Do MR (program=epmr|phaser|molrep   , nmol=numb of molecule)
+
 
 *. tool -blob_map  pdbfile  map   #find blob of density from the map.
 *. tool -anis pdbfile  #Analyze anisotropy of each atom. ANISOUs must exist.
-*. tool -cont xyzfile #calculate atom contacts (by grid method) (2013-08).    
+*. tool -cont xyzfile #calculate atom contacts (by grid method) (2013-08).
 *. tool -ha  pdbfile       #remove H atoms,  (07/16/2012)
 *. tool -mapdmp  mapfile   #look at the header of a map.(10/18/2012)
 *. tool -rfree  pdb/pdbx  mtzfile/sfcif  #test free set.( 2016-10-10)
@@ -72,7 +81,7 @@ This utility tool is to perform various jobs (created 2010-12-03)
 *. tool -occ  pdb/pdbx     #(find/correct occupancy of atom on special pos.)
 *. tool -occ_ph  pdb/pdbx  #(find/correct occupancy, use phenix)
 
-*. tool -scale xyzfile # calculate scale matrix in pdb/pdbx file 
+*. tool -scale xyzfile # calculate scale matrix in pdb/pdbx file
 *. tool -matt pdb/pdbx  #calculate Matthew coefficient.(04/18/2013)
 *. tool -pdf pdbid      #get wwPDB validation pdf full report (09/18/2014).
 *. tool -xml pdbid      #get wwPDB validation xml report (09/18/2014).
@@ -123,10 +132,10 @@ def process(*files):
 
     for k in range(narg):
         if arg[k].lower() == "-list":
-            flist = arg[k + 1]
+            flist_ = arg[k + 1]  # noqa: F841
 
         elif arg[k].lower() == "-anis":
-            ani = anisotropy(arg[k + 1])
+            ani_ = anisotropy(arg[k + 1])  # noqa: F841
 
         elif arg[k].lower() == "-stat":  # cal dev,mean,outliers, plot frequncy.
             statis.get_pop_corr(arg[k + 1], k + 2, narg, arg)
@@ -144,33 +153,33 @@ def process(*files):
             sys.exit()
 
         elif arg[k].lower() == "-scale":
-            ani = calc_scale_matrix(arg[k + 1])
+            ani_ = calc_scale_matrix(arg[k + 1])  # noqa: F841
 
-        elif arg[k].lower() == "-contact":
-            id = 0  # using crystal frame
-            if len(arg) == 4:
-                id = int(arg[k + 2])
-            ani = get_contact(arg[k + 1], id)
+        # elif arg[k].lower() == "-contact":
+        #     id = 0  # using crystal frame
+        #     if len(arg) == 4:
+        #         id = int(arg[k + 2])
+        #     ani = get_contact(arg[k + 1], id)
 
         elif arg[k].lower() == "-dev":
             min, max, mean, std, num = mean_std("", arg[k + 1], int(arg[k + 2]))
 
         elif arg[k].lower() == "-bin":
             t1, t2, t3, t4 = arg[k + 1], int(arg[k + 2]), int(arg[k + 3]), int(arg[k + 4])
-            data = mean_std_bin("", t1, t2, t3, t4)
+            data_ = mean_std_bin("", t1, t2, t3, t4)  # noqa: F841
 
         elif arg[k].lower() == "-changeb":
             if len(arg) > 6:
                 t = [float(arg[k + i + 2]) for i in range(6)]
             else:
                 t = [float(arg[k + 2])]
-            newpdb = change_bfactor(arg[k + 1], t)
+            newpdb_ = change_bfactor(arg[k + 1], t)  # noqa: F841
 
         elif arg[k].lower() == "-res":  # rename residue number from start
             if len(arg) == 3:  # automatic
-                newpdb = residue_num_seq(arg[k + 1])
+                newpdb_ = residue_num_seq(arg[k + 1])  # noqa: F841
             elif len(arg) > 3:
-                newpdb = residue_num_seq(arg[k + 1], arg[k + 2])
+                newpdb_ = residue_num_seq(arg[k + 1], arg[k + 2])  # noqa: F841
 
         elif arg[k].lower() == "-pick":
             pickup_item_from_firstfile(arg[k + 1], arg[k + 2])
@@ -261,9 +270,9 @@ def process(*files):
         elif arg[k].lower() == "-clean":
             ref_util.clean_file_4d3r(arg[k + 1])
 
-        elif arg[k].lower() == "-blob_sf":
-            coord, sf = arg[k + 1], arg[k + 2]
-            find_blob_density(coord, sf)
+        # elif arg[k].lower() == "-blob_sf":
+        #    coord, sf = arg[k + 1], arg[k + 2]
+        #    find_blob_density(coord, sf)
 
         elif arg[k].lower() == "-blob_map":
             coord, map = arg[k + 1], arg[k + 2]
@@ -329,13 +338,13 @@ def get_285_by_mr(pdbfile, sffile, id):
     """coord. not in the crystal frame. Using MR to get new xyz and align the
     original xyz to the new_xyz to get Matrix(X0). Then generate Remark 285.
     """
-    head = """REMARK 285                                                                      
-REMARK 285 THE ENTRY COORDINATES                                                
-REMARK 285 ARE NOT PRESENTED IN THE STANDARD CRYSTAL FRAME.                     
-REMARK 285                                                                      
-REMARK 285 IN ORDER TO GENERATE THE CRYSTAL AU, APPLY THE                       
-REMARK 285 FOLLOWING TRANSFORMATION MATRIX OR MATRICES AND SELECTED             
-REMARK 285 BIOMT RECORDS TO THE COORDINATES, AS SHOWN BELOW.                    
+    head = """REMARK 285
+REMARK 285 THE ENTRY COORDINATES
+REMARK 285 ARE NOT PRESENTED IN THE STANDARD CRYSTAL FRAME.
+REMARK 285
+REMARK 285 IN ORDER TO GENERATE THE CRYSTAL AU, APPLY THE
+REMARK 285 FOLLOWING TRANSFORMATION MATRIX OR MATRICES AND SELECTED
+REMARK 285 BIOMT RECORDS TO THE COORDINATES, AS SHOWN BELOW.
 """
     pdbnew = pdbfile + "_epmr"
     phelog = "phenix_superpose.log"
@@ -433,7 +442,7 @@ eof
     fw.close()
 
     os.system("chmod +x %s; ./%s" % (scr, scr))
-    nblob = get_blobs(coord, density)
+    nblob_ = get_blobs(coord, density)  # noqa: F841
 
 
 # print xyzlim
@@ -743,7 +752,7 @@ def compare_diff(fold, fnew, chain, atomo, reso, nres2):
 ##########################################################
 def check_occ(pdb):
     """return a dic with key and a list of occ"""
-    id, d1 = 0, {}
+    d1 = {}
     for x in pdb:
         tmp = x[11:16] + x[17:27]
         if tmp not in d1.keys():
@@ -822,7 +831,7 @@ def pickup_item_from_firstfile(file1, file2):
 
 set list = `cat $1 | awk '{print $1} '  `
 set log = "${1}_picked"
-rm -f $log 
+rm -f $log
 foreach id ($list)
 echo "========greping $id========="
 grep -i $id $2 >>$log
@@ -869,7 +878,7 @@ def residue_num_seq(*file):
         print("start residue=%s %s %s" % (res, ch, nres))
 
         for x in fr:
-            res2, ch2, nres2 = x[17:20], x[21:22], x[22:26]
+            res2, ch2 = x[17:20], x[21:22]
             if ("ATOM" in x[:4] or "HETA" in x[:4] or "ANIS" in x[:4]) and ch2 == ch11:
                 if res2 != res:
                     nr = nr + 1
@@ -884,7 +893,7 @@ def residue_num_seq(*file):
         print("The new pdbfile=%s" % out)
         return
 
-    ch_old, nres_old, nr = "?", -999, 0
+    ch_old, res_old, nr = "?", -999, 0
     for x in fr:
         if "ATOM" in x[:4] or "HETA" in x[:4] or "ANIS" in x[:4]:
             # print(x[21:22], x[22:26])
@@ -972,7 +981,7 @@ def calc_scale_matrix(pdbfile_in):
     alpha, beta, gamma = sa * cell[3], sa * cell[4], sa * cell[5]
 
     ca, sa = math.cos(alpha), math.sin(alpha)
-    cb, sb = math.cos(beta), math.sin(beta)
+    cb, _sb = math.cos(beta), math.sin(beta)  # noqa: F841
     cg, sg = math.cos(gamma), math.sin(gamma)
 
     vol = math.sqrt(1 - ca**2 - cb**2 - cg**2 + 2 * ca * cb * cg)

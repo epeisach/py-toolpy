@@ -1,7 +1,11 @@
 #!/usr/bin/env python
-##!/usr/bin/env /net/apps/python-2.6.1/bin/python
+# #!/usr/bin/env /net/apps/python-2.6.1/bin/python
 
-import os, sys, shutil, math, re
+import os
+import sys
+import shutil
+import math
+import re
 
 
 ERRLOG = []
@@ -11,7 +15,7 @@ def usage():
     content = """
 
 ###############################################################################
-A python program to do things related to TLS groups for refmac/phenix/buster 
+A python program to do things related to TLS groups for refmac/phenix/buster
 (created 2010-06-20 and modified as necessary  (version as filename) )
 -------------------------------------------------------------------------------
 Usages: tls.py [option]  inputfile
@@ -26,24 +30,24 @@ Usages: tls.py [option]  inputfile
 
 3.  tls -all pdbfile/pdbid : (2010-10-10, system depended)
     Check all the rcsb0????? directory and find the deposited one and map
-    all the TLS to the released one. All the mingled ligand/water chain 
+    all the TLS to the released one. All the mingled ligand/water chain
     residue/id will be mapped to the processed one.
 
 4.  tls -anis  pdbfile : (2010-11-08)
     get ANISOU records (if missing) from Biso_total.
-    
+
 5.  tls -bres  pdbfile : (2010-12-03)
     get B_residual of atoms in the tls group from Biso_total.
-    
+
 6.  tls -btls  pdbfile : (2010-12-03)
     get B_tls for atoms in tls group from Biso_total.
-    
+
 7.  tls -exttls  pdbfile : (2010-12-20)
     extract TLS from PDB. The tls file is the same format as PDB
-    
+
 8.  tls -newtls  pdbfile1 pdbfile2 : (2010-12-30)
     Put TLS groups from pdbfile2 to pdbfile1.
-    
+
 9.  tls -tls2cif  pdbfile/tls.inp : (2011-01-08)
     Extract TLS from PDBfile or tls.inp (for refmac) and convert to CIF.
 
@@ -55,17 +59,17 @@ Usages: tls.py [option]  inputfile
 
 12. tls -ph2ref  pdbfile : (2011-07-20)
     convert tls in phenix format to refmac
-    
+
 13. tls -ref2ph  pdbfile : (2011-07-20)
-    convert tls in refmac to phenix format 
-    
+    convert tls in refmac to phenix format
+
 14. tls -bus2ref  pdbfile : (2011-09-02)
     convert tls in buster format to refmac
-    
+
 15. tls -ref2bus  pdbfile
     convert tls in buster format to refmac
 
-16. tls -checktls  pdbfile : 
+16. tls -checktls  pdbfile :
     check TLS problems if exist.
 
 
@@ -91,7 +95,7 @@ def process(*files):
         usage()
 
     pdbfile, pdbdep, outfile = "", "", ""
-    opt, all_dep, dep, anis, ncs = {}, 0, 0, 0, 0
+    opt, all_dep, dep, anis = {}, 0, 0, 0
 
     for k in range(len(arg)):
         if arg[k].upper() == "-PDB" or arg[k].upper() == "-F":
@@ -120,7 +124,8 @@ def process(*files):
             outfile = arg[k + 1]
 
         elif arg[k].upper() == "-NCS":
-            ncs = 1
+            # ncs = 1
+            pass
 
         elif arg[k].upper() == "-ALL_DEP" or arg[k].upper() == "-ALL":
             opt["all_dep"] = 1
@@ -612,16 +617,16 @@ def tls2cif(pdbfile):
     fw.write("data_%s\n" % pdbid.lower())
 
     resh = """
-# 
+#
 loop_
-_ccp4_refine_tls_group.pdbx_refine_id 
-_ccp4_refine_tls_group.id 
-_ccp4_refine_tls_group.refine_tls_id 
-_ccp4_refine_tls_group.beg_auth_asym_id 
-_ccp4_refine_tls_group.beg_auth_seq_id 
-_ccp4_refine_tls_group.end_auth_asym_id 
-_ccp4_refine_tls_group.end_auth_seq_id 
-_ccp4_refine_tls_group.selection_details 
+_ccp4_refine_tls_group.pdbx_refine_id
+_ccp4_refine_tls_group.id
+_ccp4_refine_tls_group.refine_tls_id
+_ccp4_refine_tls_group.beg_auth_asym_id
+_ccp4_refine_tls_group.beg_auth_seq_id
+_ccp4_refine_tls_group.end_auth_asym_id
+_ccp4_refine_tls_group.end_auth_seq_id
+_ccp4_refine_tls_group.selection_details
 """
     fw.write(resh)
     n = 0
@@ -635,36 +640,36 @@ _ccp4_refine_tls_group.selection_details
             fw.write(t)
 
     parh = """
-# 
+#
 loop_
-_ccp4_refine_tls.pdbx_refine_id 
-_ccp4_refine_tls.id 
-_ccp4_refine_tls.details 
-_ccp4_refine_tls.method 
-_ccp4_refine_tls.origin_x 
-_ccp4_refine_tls.origin_y 
-_ccp4_refine_tls.origin_z 
-_ccp4_refine_tls.T[1][1] 
-_ccp4_refine_tls.T[2][2] 
-_ccp4_refine_tls.T[3][3] 
-_ccp4_refine_tls.T[1][2] 
-_ccp4_refine_tls.T[1][3] 
-_ccp4_refine_tls.T[2][3] 
-_ccp4_refine_tls.L[1][1] 
-_ccp4_refine_tls.L[2][2] 
-_ccp4_refine_tls.L[3][3] 
-_ccp4_refine_tls.L[1][2] 
-_ccp4_refine_tls.L[1][3] 
-_ccp4_refine_tls.L[2][3] 
-_ccp4_refine_tls.S[1][1] 
-_ccp4_refine_tls.S[2][2] 
-_ccp4_refine_tls.S[3][3] 
-_ccp4_refine_tls.S[1][2] 
-_ccp4_refine_tls.S[1][3] 
-_ccp4_refine_tls.S[2][3] 
-_ccp4_refine_tls.S[2][1] 
-_ccp4_refine_tls.S[3][1] 
-_ccp4_refine_tls.S[3][2] 
+_ccp4_refine_tls.pdbx_refine_id
+_ccp4_refine_tls.id
+_ccp4_refine_tls.details
+_ccp4_refine_tls.method
+_ccp4_refine_tls.origin_x
+_ccp4_refine_tls.origin_y
+_ccp4_refine_tls.origin_z
+_ccp4_refine_tls.T[1][1]
+_ccp4_refine_tls.T[2][2]
+_ccp4_refine_tls.T[3][3]
+_ccp4_refine_tls.T[1][2]
+_ccp4_refine_tls.T[1][3]
+_ccp4_refine_tls.T[2][3]
+_ccp4_refine_tls.L[1][1]
+_ccp4_refine_tls.L[2][2]
+_ccp4_refine_tls.L[3][3]
+_ccp4_refine_tls.L[1][2]
+_ccp4_refine_tls.L[1][3]
+_ccp4_refine_tls.L[2][3]
+_ccp4_refine_tls.S[1][1]
+_ccp4_refine_tls.S[2][2]
+_ccp4_refine_tls.S[3][3]
+_ccp4_refine_tls.S[1][2]
+_ccp4_refine_tls.S[1][3]
+_ccp4_refine_tls.S[2][3]
+_ccp4_refine_tls.S[2][1]
+_ccp4_refine_tls.S[3][1]
+_ccp4_refine_tls.S[3][2]
 """
 
     fw.write(parh)
@@ -707,7 +712,7 @@ def tls_selection_one_string(fp, i, nc):
 def pdbtls_2cif(pdbfile):
     """extract TLS from PDB file and convert it to mmcif"""
 
-    pdbid, prog = "????", "?"
+    _pdbid, _prog = "????", "?"  # noqa: F841
     fp = open(pdbfile, "r").readlines()
 
     detail, par, res, ntls, rs, p = {}, {}, {}, 0, [], []
@@ -718,12 +723,12 @@ def pdbtls_2cif(pdbfile):
     for i, x in enumerate(fp):
         x = x.strip()
         if "HEADER" in x[:6]:
-            pdbid = x[62:66]
+            _pdbid = x[62:66]  # noqa: F841
         elif "ATOM" in x[:4] or "HETA" in x[:4]:
             break
 
-        elif "REMARK   3   PROGRAM     :" in x:
-            prog = x.split(":")[1].strip()
+        # elif "REMARK   3   PROGRAM     :" in x:
+        #     prog = x.split(":")[1].strip()
 
         elif "REMARK   3   TLS GROUP :" in x:
             ntls = ntls + 1
@@ -1052,7 +1057,7 @@ def proc_tlsanl(pdbfile, outfile):
     if os.path.exists(outfile) and os.path.getsize(outfile) > 100:
         bigb, bval = check_bfactor(outfile)  # only show Biso status
         finalize_pdb(pdbfile, outfile)
-        cif = tls2cif(outfile)  # get a tls cif file
+        _cif = tls2cif(outfile)  # get a tls cif file  # noqa: F841
         #        print('The corrected TLS in mmCIF format = %s\n' %cif)
         #        print('The pdbfile after tlsanl correction = %s\n' %outfile)
         wk = 1
@@ -1879,13 +1884,13 @@ def get_parenthetic_contents(start, lists):
             m1 = m1 + 1
         if lists[i] == ")":
             m2 = m2 + 1
-        if type(lists) == type(list()):  # a list
+        if isinstance(lists, list):  # a list
             tmp_list.append(lists[i])
 
         if m1 > 0 and m1 == m2:
-            if type(lists) == type(list()):  # a list
+            if isinstance(lists, list):  # a list
                 return n, tmp_list
-            elif type(lists) == type(str()):  # a str
+            elif isinstance(lists, str):  # a str
                 return n, lists[start:n]
             break
         n = n + 1
@@ -2362,15 +2367,15 @@ def do_tlsanl(pdbfile, tls_new_inp, bresid, isoout):
 
     csh_script = """#!/bin/csh -f
 
-############################################################### 
+###############################################################
 #   tlsanl: to correct B factors (B_total = B_residual + B_tls),
 #     when the following conditions are satisfied
 #     a). The PDB coordates were refined by REFMAC
 #     b). When TLS was involved in refinement
 #     c). When the residue ranges are correct (so that tlsanl works).
-##################### Usage ################################## 
+##################### Usage ##################################
 #  tlsanl_script.csh  pdbfile      (use tls.inp  by tlsextract)
-#    or 
+#    or
 #  tlsanl_script.csh  pdbfile  tls.inp  (use the provided tls.inp)
 ##################### Do TLSAN ###############################
 
@@ -2382,13 +2387,13 @@ if( $#argv <1 ) then
 endif
 
 set pdbfile=$1
-set refmac=`grep "^REMARK   3   PROGRAM " -m 1 $pdbfile | awk '{print $5}' `  
+set refmac=`grep "^REMARK   3   PROGRAM " -m 1 $pdbfile | awk '{print $5}' `
 if( $refmac !~ "REFMAC" ) then
 echo "Entry ($1) not refined by REFMAC!"
 #    exit()
 endif
 
-set aniso=`grep "^ANISOU" -m 2 $pdbfile | wc -l  | awk '{print $1}' ` 
+set aniso=`grep "^ANISOU" -m 2 $pdbfile | wc -l  | awk '{print $1}' `
 if ( $aniso >1 ) then
 echo "Note: ANISOU records exist in the file=$pdbfile"
 echo "Warning: ANISOU records exist. no tls correction was applied"
@@ -2397,7 +2402,7 @@ echo "Warning: ANISOU records exist. no tls correction was applied"
 endif
 
 if ($#argv <2) then    # no tls.inp, extract tls from PDB
-    
+
     set tls_inp = "${pdbfile}_tls.inp"
     tlsextract XYZIN $pdbfile TLSOUT $tls_inp >/dev/null
 
@@ -2420,8 +2425,8 @@ endif
 set tlspdb="${pdbfile}_tls"
 set tlslog="${pdbfile}_tls.log"
 tlsanl XYZIN  $pdbfile  TLSIN  $tls_inp  XYZOUT  $tlspdb <<end >$tlslog
-BRESID %s   
-ISOOUT %s 
+BRESID %s
+ISOOUT %s
 end
 
 """ % (
@@ -2450,7 +2455,7 @@ end
 def check_bfactor(pdbfile):
     """check B factors in the PDB. if B_full<0 add a constant"""
 
-    bval, negb, bigb, wk = [], [], 0, 1
+    bval, negb, bigb = [], [], 0
     if os.path.exists(pdbfile) and os.path.getsize(pdbfile) > 1000:
         fr = open(pdbfile, "r")
         for x in fr:
@@ -2540,21 +2545,21 @@ def correct_tls(pdbfile):
     prog, remark_b, tls_b, anisou, ntls = "?" * 5
     for line in fr:
         if "REMARK   3   PROGRAM     :" in line and "REFMAC" in line:
-            prog = "REFMAC"
+            _prog = "REFMAC"  # noqa: F841
 
         elif "NUMBER OF TLS GROUPS  :" in line:
             ntls = get_value_after_id(line, ":")
-        elif "ATOM RECORD CONTAINS RESIDUAL B FACTORS ONLY" in line:
-            tls_b = "RESID"
-        elif "ATOM RECORD CONTAINS SUM OF TLS AND RESIDUAL B " in line:
-            tls_b = "FULL"
-        elif "REMARK   3  U VALUES      : RESIDUAL ONLY" in line:
-            remark_b = "RESID"
-        elif "REMARK   3  U VALUES      : WITH TLS ADDED" in line:
-            remark_b = "FULL"
+        # elif "ATOM RECORD CONTAINS RESIDUAL B FACTORS ONLY" in line:
+        #     tls_b = "RESID"
+        # elif "ATOM RECORD CONTAINS SUM OF TLS AND RESIDUAL B " in line:
+        #     tls_b = "FULL"
+        # elif "REMARK   3  U VALUES      : RESIDUAL ONLY" in line:
+        #     remark_b = "RESID"  # noqa: F841
+        # elif "REMARK   3  U VALUES      : WITH TLS ADDED" in line:
+        #     remark_b = "FULL"  # noqa: F841
 
-        elif "ANISOU" in line[0:6]:
-            anisou = "T"
+        # elif "ANISOU" in line[0:6]:
+        #     anisou = "T"  # noqa: F841
 
         elif "REMARK   3    RESIDUE RANGE : " in line:
             tmp = line.split(":")[1].strip().split()
@@ -2664,13 +2669,13 @@ def correct_residue_range(ntls, pdbfile, line, res_range):
 
     res = line[29:].split()
     nr = len(res)
-    ch1, n1, ch2, n2 = (" ", 0, " ", 0)
+    ch1 = " "
 
     if "NULL" in line or nr < 2:
         print(pdbfile + "; Error! wrong residue range(%s)." % line[29:].strip())
 
     elif nr == 4:  # most common cases
-        ch1 = ch2 = res[0]
+        ch1 = res[0]
         if res[0] != res[2]:
             print(pdbfile + "; Error! wrong residue range(%s).\n" % line[29:].strip())
 
@@ -2678,7 +2683,7 @@ def correct_residue_range(ntls, pdbfile, line, res_range):
             line1 = correct_range(pdbfile, res[1], res[3], line, ch1, res_range)
 
     elif nr == 3:
-        ch1 = ch2 = res[0]
+        ch1 = res[0]
 
         line1 = correct_range(pdbfile, res[1], res[2], line, ch1, res_range)
         t = "Warning: residue range correction(%s)->(%s).\n" % (line[29:55].strip(), line1[29:55].strip())
@@ -2761,11 +2766,11 @@ def correct_range(pdbfile, res1, res2, ln, ch, res_range):
         poly1, poly2 = chain_range[ch][0], chain_range[ch][1]
         tmp1, tmp2, tmp3 = "", "", ""
         if ch in chain_range.keys():  # poly
-            n1, n2, id = chain_range[ch][0], chain_range[ch][1], 1
+            n1, n2 = chain_range[ch][0], chain_range[ch][1]
             tmp1 = make_new_line(pdbfile, ln, ch, n1, n2, 1)
 
         if ch in chain_range1.keys():  # lig
-            n1, n2, id = chain_range1[ch][0], chain_range1[ch][1], 1
+            n1, n2 = chain_range1[ch][0], chain_range1[ch][1]
 
             if n1 < poly1 and n2 > poly2:  # lig residue range span polymer
                 tmp2 = make_two_newline(pdbfile, chain1[ch], ln, ch, poly1, poly2, 1)
@@ -2773,7 +2778,7 @@ def correct_range(pdbfile, res1, res2, ln, ch, res_range):
                 tmp2 = make_new_line(pdbfile, ln, ch, n1, n2, 1)
 
         if ch in chain_range2.keys():  # water
-            n1, n2, id = chain_range2[ch][0], chain_range2[ch][1], 1
+            n1, n2 = chain_range2[ch][0], chain_range2[ch][1]
 
             if n1 < poly1 and n2 > poly2:  # lig residue range span polymer
                 tmp3 = make_two_newline(pdbfile, chain2[ch], ln, ch, poly1, poly2, 1)
@@ -2817,7 +2822,7 @@ def check_res_range(pdbfile, ln, chain, ch, n1, n2, id):
 def make_two_newline(pdbfile, resn_in, ln, ch, n1, n2, id):
     resn = sorted(resn_in)
     # print(resn, ch, n1, n2, id)
-    k1, k2, nn = 0, 0, len(resn) - 1
+    k2, nn = 0, len(resn) - 1
     for n in range(nn):
         if resn[n + 1] > n1:
             k2 = n
@@ -3145,7 +3150,7 @@ def chain_res_atom(pdbfile):
 
     fr = open(pdbfile, "r")
 
-    n_old, ch_old = -99999, "?"
+    n_old = -99999
     chain = {}
     for ln in fr:
         if ("ATOM" not in ln[:4] and "HETATM" not in ln[:6]) or len(ln) < 54:
@@ -3155,7 +3160,6 @@ def chain_res_atom(pdbfile):
             chain[ch] = [ln]
         elif ch in chain.keys():
             chain[ch].append(ln)
-        ch_old = ch
 
     record = {}
     for ch in chain.keys():
@@ -3367,7 +3371,6 @@ def match_ligand_water(pdbfile, pdbdep):
 
     record = chain_res_atom(pdbdep)
 
-    tlsd_new = []
     for x in tlsd[:]:
         if "REMARK   3    RESIDUE RANGE :" in x:
             # print(x)
@@ -3443,7 +3446,7 @@ def check_and_correct_tls(pdbfile):
     out = pdbfile + "__TLSNEW"
     fw = open(out, "w")
 
-    tls = get_tls_group(fp)
+    tls_ = get_tls_group(fp)  # noqa: F841
 
     xyzt = []
     for x in fp:

@@ -1,4 +1,5 @@
-import os, math
+import os
+import math
 import cifparse as cif
 
 
@@ -95,10 +96,9 @@ def remove_bad_water(pdbfile, sffile):
     ch = cif.parse_values(items, values, "_pdbx_rscc_mapman_prob.auth_asym_id")
     comp = cif.parse_values(items, values, "_pdbx_rscc_mapman_prob.auth_comp_id")
     seq = cif.parse_values(items, values, "_pdbx_rscc_mapman_prob.auth_seq_id")
-    rsr = cif.parse_values(items, values, "_pdbx_rscc_mapman_prob.real_space_R")
-    wrsr = cif.parse_values(items, values, "_pdbx_rscc_mapman_prob.RsR_over_correlation")
-    dcc = cif.parse_values(items, values, "_pdbx_rscc_mapman_prob.correlation")
-    nn = len(ch)
+    # rsr = cif.parse_values(items, values, "_pdbx_rscc_mapman_prob.real_space_R")
+    # wrsr = cif.parse_values(items, values, "_pdbx_rscc_mapman_prob.RsR_over_correlation")
+    # dcc = cif.parse_values(items, values, "_pdbx_rscc_mapman_prob.correlation")
     fp = open(pdbfile, "r")
     for x in fp:
         if ("ATOM" in x[:4] or "HETATM" in x[:6] or "ANISOU" in x[:6]) and x[17:20] == "HOH":
@@ -233,18 +233,18 @@ def mtz2map(mtz, pdbfile, mapout, maptype):
     elif maptype == "FEM":
         f1, phi = "FEM", "PHIFEM"
 
-    scr = """#!/bin/tcsh  -f 
+    scr = """#!/bin/tcsh  -f
 
 ##################### mtz2map #####################
 echo "Calculating %s map using %s %s ..."
 
-fft  HKLIN  %s  MAPOUT  TMPMAP_BY_MTZ.map  <<end >/dev/null 
+fft  HKLIN  %s  MAPOUT  TMPMAP_BY_MTZ.map  <<end >/dev/null
 title mtz2map
  labin F1=%s  PHI=%s
 end
 
 # Extend the map to cover the volume of a model (about 4.1A)
-mapmask MAPIN  TMPMAP_BY_MTZ.map  XYZIN  %s   MAPOUT %s <<end >/dev/null 
+mapmask MAPIN  TMPMAP_BY_MTZ.map  XYZIN  %s   MAPOUT %s <<end >/dev/null
 BORDER 5
 end
 
@@ -273,13 +273,13 @@ rm -f TMPMAP_BY_MTZ.map
 def scale_matrix(pdbfile):
     fp = open(pdbfile, "r").readlines()
 
-    cell, scale = [], 0
+    cell = []
     for x in fp:
         if "CRYST1" in x[:6]:
             v = x[6:].split()
             cell = [float(v[i]) for i in range(6)]
-        elif "SCALE1" in x[:6]:
-            scale = 1
+        # elif "SCALE1" in x[:6]:
+        #     scale = 1
         elif "ATOM" in x[:4] or "HETA" in x[:4]:
             break
 
@@ -292,7 +292,7 @@ def scale_matrix(pdbfile):
     alpha, beta, gamma = sa * cell[3], sa * cell[4], sa * cell[5]
 
     ca, sa = math.cos(alpha), math.sin(alpha)
-    cb, sb = math.cos(beta), math.sin(beta)
+    cb, _sb = math.cos(beta), math.sin(beta)  # noqa: F841
     cg, sg = math.cos(gamma), math.sin(gamma)
 
     vol = math.sqrt(1 - ca**2 - cb**2 - cg**2 + 2 * ca * cb * cg)
@@ -309,7 +309,6 @@ def clean_file_4d3r(pdb):
 
     out = pdb + "_d3r"
     fw = open(out, "w")
-    scale = 0
     occ, b = 0, 0
     for i, x in enumerate(fp):
         if "ATOM" in fp[i][:4] or "HETATM" in fp[i][:6]:

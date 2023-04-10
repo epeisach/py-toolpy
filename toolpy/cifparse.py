@@ -2,7 +2,8 @@
 # A cif parser in python (2013-01-06 ), HY
 ##########################################################
 
-import os, sys, shutil, string, math
+import os
+import sys
 
 
 ##########################################################
@@ -120,7 +121,7 @@ def cifparse(flist, cate):
                         break
             j = j + 1
 
-    ###finshed parsing
+    # ##finshed parsing
     nitem, nval = len(items), len(values)
     n = nval % nitem
     nrow = nval / nitem
@@ -825,9 +826,9 @@ def add_tls(fw, flist):
         items, values = cifparse(flist, "_pdbx_refine_tls.")
         tab = "_pdbx_refine_tls"
 
-    refid = parse_values(items, values, "%s.pdbx_refine_id" % tab)
+    # refid = parse_values(items, values, "%s.pdbx_refine_id" % tab)
     tlsid = parse_values(items, values, "%s.id" % tab)
-    method = parse_values(items, values, "%s.method" % tab)
+    # method = parse_values(items, values, "%s.method" % tab)
     xo = parse_values(items, values, "%s.origin_x" % tab)
     yo = parse_values(items, values, "%s.origin_y" % tab)
     zo = parse_values(items, values, "%s.origin_z" % tab)
@@ -854,8 +855,8 @@ def add_tls(fw, flist):
     s33 = parse_values(items, values, "%s.S[3][3]" % tab)
 
     items, values = cifparse(flist, "%s_group." % tab)  # a loop
-    refid1 = parse_values(items, values, "%s_group.pdbx_refine_id" % tab)
-    groupid = parse_values(items, values, "%s_group.id" % tab)
+    # refid1 = parse_values(items, values, "%s_group.pdbx_refine_id" % tab)
+    # groupid = parse_values(items, values, "%s_group.id" % tab)
     tlsid1 = parse_values(items, values, "%s_group.refine_tls_id" % tab)
     asymid1 = parse_values(items, values, "%s_group.beg_auth_asym_id" % tab)
     seqid1 = parse_values(items, values, "%s_group.beg_auth_seq_id" % tab)
@@ -1341,20 +1342,20 @@ def is_a_number(s):
 ##########################################################
 def usage():
     content = """
-    
+
 -------------------------------------------------------------------  
  A program for fast parsing mmcif files. (HY,2013-01-10)
 -------------------------------------------------------------------
       How to use the cif parser (see the main below)
-      
+
 
 -------------------------------------------------------------------
               Defination of valid mmcif format:
 1. for non-looped items, below are the valid syntaxes
 _citation.title "The Structure and Evolution of the Major Capsid Protein"
-or 
+or
 _citation.title 'The Structure and Evolution of the Major Capsid Protein'
-or 
+or
 _citation.title
 ;The Structure and Evolution of
 the Major Capsid Protein
@@ -1362,51 +1363,51 @@ the Major Capsid Protein
 
 2. for looped items, below are the valid syntaxes
 loop_
-_citation_author.citation_id 
-_citation_author.name 
-_citation_author.ordinal 
-primary '???, N.' 1 
-primary '???, A.'     2 
+_citation_author.citation_id
+_citation_author.name
+_citation_author.ordinal
+primary '???, N.' 1
+primary '???, A.'     2
 
 or
 primary
-"???, N." 1 
+"???, N." 1
 primary
-'???, A.'     2 
+'???, A.'     2
 
 or
 primary
 ;???, N.
 ;
-1 
+1
 primary
-'???, A.'     2 
+'???, A.'     2
 
 -------------------------------------------------------------------
 """
     print(content)
     sys.exit()
 
-    """
-##########################################################
-if __name__ == '__main__':
-    
-    files=sys.argv[1]
-    print('file=%s' %files)
-    flist=open(files, 'r').readlines()
-    items,values = cifparse(flist, '_cell.')
-    v1=parse_values(items,values, '_cell.entry_id')
-    v2=parse_values(items,values, '_cell.length_c')
-    v3=parse_values(items,values, '_cell.angle_beta')
-    print(v1,v2,v3)
+#     """
+# ##########################################################
+# if __name__ == '__main__':
 
-    items,values = cifparse(flist, '_database_PDB_rev.')
-    v1=parse_values(items,values, '_database_PDB_rev.num')
-    v2=parse_values(items,values, '_database_PDB_rev.date')
-    v3=parse_values(items,values, '_database_PDB_rev.status')
+#     files=sys.argv[1]
+#     print('file=%s' %files)
+#     flist=open(files, 'r').readlines()
+#     items,values = cifparse(flist, '_cell.')
+#     v1=parse_values(items,values, '_cell.entry_id')
+#     v2=parse_values(items,values, '_cell.length_c')
+#     v3=parse_values(items,values, '_cell.angle_beta')
+#     print(v1,v2,v3)
 
-    print(v1,v2,v3)
+#     items,values = cifparse(flist, '_database_PDB_rev.')
+#     v1=parse_values(items,values, '_database_PDB_rev.num')
+#     v2=parse_values(items,values, '_database_PDB_rev.date')
+#     v3=parse_values(items,values, '_database_PDB_rev.status')
 
-##########################################################
-    
-    """
+#     print(v1,v2,v3)
+
+# ##########################################################
+
+#     """

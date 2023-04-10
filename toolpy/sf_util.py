@@ -2,8 +2,13 @@
 #   This module is sf related
 # ==================================================
 
-import os, sys, math, shutil
-import util, prog, parse, cifparse as cif
+import os
+import sys
+import shutil
+import util
+import prog
+import parse
+import cifparse as cif
 
 
 def sf_quality(sffile, pdbfile):

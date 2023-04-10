@@ -1,9 +1,11 @@
 #!/usr/bin/env /apps/python-2.6.1/bin/python
-##!/usr/bin/env python
+# #!/usr/bin/env python
 
 
 import MySQLdb  # in apps-centos-5/python-2.6.6/bin/python (if not work, check .tcshrc)
-import os, sys, math, string
+import os
+import sys
+import math
 import util
 
 SQL = "mysql -u rcsbuser -prcsb0000 -h pdb-f-linux-2 cleanv1 -e "
@@ -74,7 +76,7 @@ def usage():
     2. pdb_stat  -all
     do all the statistics
     ----------------------------------------------------------------------
-    
+
 """
     print(content)
     sys.exit()
@@ -134,7 +136,7 @@ def plot_pop_new(ddir, x, data_all, ncol):
     data_all: [[col1, col2.. ], [col1, col2 ..] ..]
     """
 
-    item, xlabel, ylabel, data_type, minv, maxv, nstep = x[0], x[1], x[2], x[3], x[4], x[5], x[6]
+    item, xlabel, ylabel, _data_type, minv, maxv, nstep = x[0], x[1], x[2], x[3], x[4], x[5], x[6]  # noqa: F841
     shell = data_bin(minv, maxv, nstep)
 
     data1 = []
@@ -165,7 +167,8 @@ def plot_corr_new(ddir, x, data_all, nc1, nc2, shell):
     """get the data correlations with resolution"""
 
     #    cate, token, data_type,  minv, maxv, nstep = x[0],x[1],x[2],x[3],x[4],x[5]
-    item, xlabel, ylabel, data_type, minv, maxv, nstep = x[0], x[1], x[2], x[3], x[4], x[5], x[6]
+    item, xlabel, ylabel, minv, maxv = x[0], x[1], x[2], x[4], x[5]
+    # data_type, nstep = x[3], x[6]
 
     data1 = []
     for y in data_all:
@@ -257,7 +260,8 @@ def plot_pop(ddir, x, data_all):
 def plot_corr(ddir, x, data_all):
     """get the data correlations with resolution"""
 
-    cate, token, minv, maxv, nstep = x[0], x[1], x[3], x[4], x[5]
+    cate, token = x[0], x[1]
+    # minv, maxv, nstep = x[3], x[4], x[5]
 
     res = "ls_d_res_high"
     if x[1] not in data_all[0] or res not in data_all[0]:
@@ -538,7 +542,7 @@ def html_head():
 <head>
   <title>pdbitem statistics</title>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-  <META NAME="description" CONTENT="pdbitem_stat is a tool to present the annotated pdb items in term of histogram. It shows how the data is populated in the database, and how the data is correlated with resolution, and how the data grows annually.">
+  <META NAME="description" CONTENT="pdbitem_stat is a tool to present the annotated pdb items in term of histogram. It shows how the data is populated in the database, and how the data is correlated with resolution, and how the data grows annually.">  # noqa: E501
   <META NAME="keywords" CONTENT=" statistics, population">
   <link href="/styles/general.css" rel="STYLESHEET" type="text/css">
 </head>
@@ -580,8 +584,8 @@ document.write("(Last update: ", today.getDate(),"/",today.getMonth()+1,"/",toda
  <p>Tables below listed the statistics for some of the annotated cif
     items in terms of histograms. They show how the data is populated in the database,
     and how the data changes with  resolution.
-    The outliers are excluded from the plot and are also given in the table.  
-    
+    The outliers are excluded from the plot and are also given in the table.
+
     <p><b>For the graph of population:</b>
     The number on the top of each bar is the percentage of the population of the
     item. It was calculated by the number of the entries in the data range at the
@@ -641,18 +645,18 @@ Please select an data item in the above panel to show the graphs.
     fw.write(tmp)
     fw.close()
 
-    refer = {
-        "refine": "refine",
-        "refine_ls_shell": "refine_ls_shell",
-        "reflns": "reflns",
-        "refine_ls_shell": "refine_ls_shell",
-        "exptl_crystal": "exptl_crystal",
-        "exptl_crystal_grow": "exptl_crystal_grow",
-        "entity": "entity",
-        "diffrn_radiation_wavelength": "diffrn_radiation_wavelength",
-        "string": "string",
-        "other": "other",
-    }
+    # refer = {
+    #     "refine": "refine",
+    #     "refine_ls_shell": "refine_ls_shell",
+    #     "reflns": "reflns",
+    #     "refine_ls_shell": "refine_ls_shell",
+    #     "exptl_crystal": "exptl_crystal",
+    #     "exptl_crystal_grow": "exptl_crystal_grow",
+    #     "entity": "entity",
+    #     "diffrn_radiation_wavelength": "diffrn_radiation_wavelength",
+    #     "string": "string",
+    #     "other": "other",
+    # }
 
     #    html='index.html'
     html = "bottom.html"
@@ -705,13 +709,13 @@ Please select an data item in the above panel to show the graphs.
         if "start:" in x[0]:
             s1 = x[0].split(":")[1]
             s2 = (
-                '<p><h3> Data population and yearly growth and the growth rate for the <i>%s</i> items.  <a name="%s"  href="#top" style="font-size:medium;">&nbsp;  (top)</a> </h3>  <p> (Numbers on the top of the bar is the percentage calculated from the number of population and the total non-null entries. The yearly growth rate is calculated  by the entry number divided total number for the year.)  <p>\n'
+                '<p><h3> Data population and yearly growth and the growth rate for the <i>%s</i> items.  <a name="%s"  href="#top" style="font-size:medium;">&nbsp;  (top)</a> </h3>  <p> (Numbers on the top of the bar is the percentage calculated from the number of population and the total non-null entries. The yearly growth rate is calculated  by the entry number divided total number for the year.)  <p>\n'  # noqa: E501
                 % (s1.upper(), s1)
             )
             fw.write(s2)
             fw.write("<table>\n")
             s3 = (
-                "<tr><td><b>Data population %s</b></td>  <td >data4plot  %s</td>  <td><b>yearly growth %s</b></td>  <td> data4plot %s</td>   <td><b>yearly growth rate %s</b></td>   <td> data4plot </td></tr>\n"
+                "<tr><td><b>Data population %s</b></td>  <td >data4plot  %s</td>  <td><b>yearly growth %s</b></td>  <td> data4plot %s</td>   <td><b>yearly growth rate %s</b></td>   <td> data4plot </td></tr>\n"  # noqa: E501
                 % (sp, sp, sp, sp, sp)
             )
             fw.write(s3)
@@ -884,7 +888,7 @@ def clean_data(infile, idd):
     print("Cleaning data (%s)." % infile)
     data = []
     fp = open(infile, "r")
-    c1, c2 = 1, 2  # change if other columns
+
     for x in fp:
         if "structure" in x:
             continue
@@ -1051,7 +1055,7 @@ def torsion_info(ddir):
         #        print('%-15s  %3d  %5d %2d  %8.2f'%(x.strip(), num, naa, len(nch), per))
         data.append([pdbid, reso, "%.1f" % per])
 
-    ########ploting below
+    # #######ploting below
     y = ["Amino_Acid_torsion_outlier", "torsion_angle_outlier", "Number of Residue", 1, 0, 40.0, 20]
     plot_pop_new(ddir, y, data, 2)
 
@@ -1359,9 +1363,9 @@ order by d.date_original,  r.ls_d_res_high \
                     p1 = 100 * float(ns) / nrf
                     tmp1[k] = "%.2f " % (p1)
 
-                    s1 = "(%.2f->%.2f)  %.3f %.3f  %d" % (reso[k - 1], reso[k], avg, dev, len(t1))
-                    s2 = "%d  (%.2f->%.2f) %d  %d  %.2f" % (i, reso[k - 1], reso[k], ns, nrf, p1)
-                #   print(s2)
+                    # s1 = "(%.2f->%.2f)  %.3f %.3f  %d" % (reso[k - 1], reso[k], avg, dev, len(t1))
+                    # s2 = "%d  (%.2f->%.2f) %d  %d  %.2f" % (i, reso[k - 1], reso[k], ns, nrf, p1)
+                    # print(s2)
 
             #  print(k, z, t1,avg, dev)
             ss = "%d %s  %s %s %s %s " % (i, tmp[1], tmp[2], tmp[3], tmp[4], tmp[5])
@@ -1755,7 +1759,7 @@ def fit_growth(ddir, idd, file, type):
 
     fp = open(file, "r").readlines()
     d = [x for x in fp if len(x) > 1 and "year" not in x]
-    x0 = int(d[0].split()[0])  # first year
+    # x0 = int(d[0].split()[0])  # first year
     xf = int(d[-1].split()[0])  # last year
 
     a, b, c, eq = fitted(file, x0_fit, xf_fit, idd)
