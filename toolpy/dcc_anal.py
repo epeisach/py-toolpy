@@ -33,7 +33,7 @@ def process(args):
 
 
 ##########################################################
-def get_matt_coeff(file, id):
+def get_matt_coeff(file, id):  # pylint: disable=redefined-builtin
     """calculate Matthew_coeff: file is in pdb format;
     id=0, do not consider MTRIX records;  id==1 consider
     """
@@ -117,7 +117,7 @@ def non_standard_res(res, atom):
 
 
 ##########################################################
-def calc_matt(cell_vol, mass, nsym, nmat, id):
+def calc_matt(cell_vol, mass, nsym, nmat, id):  # pylint: disable=redefined-builtin
     mass = nsym * mass
     if nmat > 0 and id > 0:
         mass = mass * nmat
@@ -264,7 +264,7 @@ def get_list(file):
     if util.is_number(rw[0]) and util.is_number(crw):
         t = int(1000 * (float(rw[0]) - float(crw)))
         rw_crw = "%d" % (t)
-    all = [
+    all = [  # pylint: disable=redefined-builtin
         pdbid,
         res,
         rw_crw,
@@ -479,7 +479,7 @@ def cell_volume(cell):
     beta = 3.14159 * cell[4] / 180
     gamma = 3.14159 * cell[5] / 180
 
-    cell_volume = (
+    cell_vol = (
         cell[0]
         * cell[1]
         * cell[2]
@@ -487,7 +487,7 @@ def cell_volume(cell):
             1.0 - math.cos(alpha) * math.cos(alpha) - math.cos(beta) * math.cos(beta) - math.cos(gamma) * math.cos(gamma) + 2.0 * math.cos(alpha) * math.cos(beta) * math.cos(gamma)
         )
     )
-    return cell_volume
+    return cell_vol
 
 
 ##########################################################

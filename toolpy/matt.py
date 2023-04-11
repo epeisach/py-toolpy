@@ -22,7 +22,7 @@ def matt_coeff(infile, outfile):
     fp = open(file, "r")
 
     cell = [1, 1, 1, 1, 1, 1]
-    spt, nop, nmat, sym, res, atom, res = 1, 0, 1, "X", [], [], []
+    spt, nop, nmat, sym, res, atom = 1, 0, 1, "X", [], []
     rmass, amass, armass = 0, 0, 0
     hetres, aname, rest = [], [], ""
     for x in fp:
@@ -340,7 +340,7 @@ def cell_volume(cell):
     beta = 3.14159 * cell[4] / 180
     gamma = 3.14159 * cell[5] / 180
 
-    cell_volume = (
+    cell_vol = (
         cell[0]
         * cell[1]
         * cell[2]
@@ -349,7 +349,7 @@ def cell_volume(cell):
         )
     )
 
-    return cell_volume
+    return cell_vol
 
 
 ##########################################################

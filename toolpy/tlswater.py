@@ -15,7 +15,7 @@ def compare_r_tls_water(pdbfile_inp, sffile):
     pdbfile = rid_of_anisou(pdbfile_inp)
 
     pdbfile_new = find_tls_water(pdbfile)
-    out2_ = prog.run_dcc(pdbfile_new, sffile, "")  # noqa: F841
+    _out2 = prog.run_dcc(pdbfile_new, sffile, "")  # noqa: F841
 
     util.delete_file(pdbfile)
 
@@ -110,7 +110,8 @@ def newpdb_tls4water(pdbfile, pdb, hoh, hoh_orig):
     for ln in hoh:
         fo.write(ln)
 
-    fo.close(), fr.close()
+    fo.close()
+    fr.close()
     return pdbfile_new
 
 

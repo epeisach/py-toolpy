@@ -10,7 +10,7 @@ import cifparse as cif
 def cell(flist):
     """return cell values as a list of float!"""
 
-    cell = [0, 0, 0, 0, 0, 0]
+    mycell = [0, 0, 0, 0, 0, 0]
     items, values = cif.cifparse(flist, "_cell.")
     if not len(items):
         return cell
@@ -29,9 +29,9 @@ def cell(flist):
         if len(x) == 0 or not util.is_number(x[0]):
             print("Error: cell has wrong (%s) values" % x)
             continue
-        cell[i] = float(x[0].strip())
+        mycell[i] = float(x[0].strip())
 
-    return cell
+    return mycell
 
 
 ###############################################################################
@@ -57,7 +57,7 @@ def ncs_matrix(flist):
     if not items:
         return []
 
-    id = cif.parse_values(items, values, "_struct_ncs_oper.id")
+    id = cif.parse_values(items, values, "_struct_ncs_oper.id")  # pylint: disable=redefined-builtin
     code = cif.parse_values(items, values, "_struct_ncs_oper.code")
 
     b11 = cif.parse_values(items, values, "_struct_ncs_oper.matrix[1][1]")
@@ -97,7 +97,7 @@ def ncs_matrix(flist):
 ###############################################################################
 def scale(flist):
     """get SCALE matrix, return a list of 3X4 matrix"""
-    scale = []
+    outscale = []
     items, values = cif.cifparse(flist, "_atom_sites.")
     if not items:
         return []
@@ -127,9 +127,9 @@ def scale(flist):
         if not (mt1 and mt2 and mt3):
             print("Error: Scale matrix has wrong values")
             continue
-        scale.append([mt1, mt2, mt3])
+        outscale.append([mt1, mt2, mt3])
 
-    return scale
+    return outscale
 
 
 ###############################################################################

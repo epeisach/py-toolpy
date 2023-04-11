@@ -29,7 +29,7 @@ def histogram_plot(infile, xcol, xlabel, ylabel, title, nstep, xxrange):
 
     if xxrange:
         bx1, bx2 = get_range(xxrange)
-    data_n, outlier = filter_data(data_o, [bx1, bx2], col)
+    data_n, _outlier = filter_data(data_o, [bx1, bx2], col)
 
     print("\nStatistics summary for the input data (column=%d)" % xcol)
     print_stat(data_o, 0, "alldata")
@@ -56,7 +56,7 @@ def histogram_plot(infile, xcol, xlabel, ylabel, title, nstep, xxrange):
     plot = """%s  plot '%s' using 3:xtic(2) lc rgb "blue" """ % (ss, fpop)
     #    plot = """plot '%s' using 3:xtic(2) lc rgb "blue" ,'' u 0:3:4 with labels offset 0, 0.5""" %(fpop)
     bar, rot, key, style = 0, 1, 0, 0
-    gnuscr, gnuout = gnu_plot(fpop, title, xxrange, yyrange, xlabel, ylabel, bar, rot, key, style, plot)
+    _gnuscr, _gnuout = gnu_plot(fpop, title, xxrange, yyrange, xlabel, ylabel, bar, rot, key, style, plot)
 
     os.system("display %s.png  &" % fpop)
 
@@ -125,7 +125,7 @@ def correlation_plot(infile, xcol, ycol, xlabel, ylabel, title, nstep, xxrange, 
     """
         % fbox
     )
-    gnuscr, gnuout = gnu_plot(fbox, title, xrang, yrang, xlabel, ylabel, bar, rot, key, style, plot)
+    _gnuscr, _gnuout = gnu_plot(fbox, title, xrang, yrang, xlabel, ylabel, bar, rot, key, style, plot)
 
     fcorr = "correlation_plot"  # for scattered plot
     #    data_corr(fcorr,data_o, shell, 0, '')
@@ -144,7 +144,7 @@ def correlation_plot(infile, xcol, ycol, xlabel, ylabel, title, nstep, xxrange, 
         xcol,
         ycol,
     )
-    gnuscr, gnuout = gnu_plot(fcorr, title, xrang, yrang, xlabel, ylabel, bar, rot, key, style, plot)
+    _gnuscr, _gnuout = gnu_plot(fcorr, title, xrang, yrang, xlabel, ylabel, bar, rot, key, style, plot)
 
     if os.path.exists("fit.log"):
         print("\nThe linear fit f(x)=a*x + b ")
@@ -167,8 +167,8 @@ def correlation(data, col1, col2):
     <x> and  <y> are the average of x and y.
     """
 
-    xavg, xdev, xmin, xmax = util.mean_dev(data, col1)
-    yavg, ydev, ymin, ymax = util.mean_dev(data, col2)
+    xavg, xdev, _xmin, _xmax = util.mean_dev(data, col1)
+    yavg, ydev, _ymin, _ymax = util.mean_dev(data, col2)
 
     #    print xavg, xdev, xmin, xmax, yavg, ydev, ymin, ymax
 
@@ -197,7 +197,7 @@ def print_stat(data, coln, idd):
 
 
 ######################################################################
-def data_corr(fcorr, fp, shell, col, id):
+def data_corr(fcorr, fp, shell, col, id):  # pylint: disable=redefined-builtin
     """get data correlations between column of col and col+1
     fp: is  a list of list; fcorr is a out filename,
     shell is the value of column (col) break into bin.
@@ -220,7 +220,7 @@ def data_corr(fcorr, fp, shell, col, id):
         if i == 0:
             continue
 
-        bin = (shell[i - 1] + shell[i]) / 2.0
+        bin = (shell[i - 1] + shell[i]) / 2.0  # pylint: disable=redefined-builtin
         n, subg = 0, []
         for k in range(j, nt):
             if fp[k][col] >= shell[i]:
@@ -288,7 +288,7 @@ def scatter_plot(file, col1, col2):
     xrange, yrange, xlabel, ylabel = "", "", "(column=%d)" % col1, "(column=%d)" % col2
     bar, rot, key, style = 0, 1, 0, 2
     plot = "plot '%s' using 1:2 " % (fcc)
-    gnuscr, gnuout = gnu_plot(scat, title, xrange, yrange, xlabel, ylabel, bar, rot, key, style, plot)
+    _gnuscr, _gnuout = gnu_plot(scat, title, xrange, yrange, xlabel, ylabel, bar, rot, key, style, plot)
 
     print("column1=%d : mean=%.3f; dev=%.3f; min=%.3f; max=%.3f" % (col1, xavg0, xdev0, xmin0, xmax0))
     print("column2=%d : mean=%.3f; dev=%.3f; min=%.3f; max=%.3f" % (col2, xavg, xdev, xmin, xmax))
@@ -363,7 +363,7 @@ def data_in_shell(data, shell, col):
     for i in range(nstep):
         if i == 0:
             continue
-        bin = (shell[i - 1] + shell[i]) / 2.0
+        bin = (shell[i - 1] + shell[i]) / 2.0  # pylint: disable=redefined-builtin
         n = 0
         for k in range(j, nt):
             if data[k][col] > shell[i]:
@@ -420,8 +420,8 @@ def limits_by_iqr_2set(datain, col, scale):
     data1 = datain[:n1]
     data2 = datain[n3:]
 
-    bb1, bb2, qb2 = limits_by_iqr(data1, col, scale)
-    ba1, ba2, qa2 = limits_by_iqr(data2, col, scale)
+    bb1, _bb2, _qb2 = limits_by_iqr(data1, col, scale)
+    _ba1, ba2, _qa2 = limits_by_iqr(data2, col, scale)
     #   return bb1,ba2
     b1, b2 = adjust_outlier(bb1, ba2, datain, col)
     # print  b1,b2, bb1,ba2
@@ -460,8 +460,8 @@ def limits_by_iqr_median(datain, col, scale):
         if z[col] >= maxi:
             data2.append(z)
 
-    bb1, bb2, qb2 = limits_by_iqr(data1, col, scale)
-    ba1, ba2, qa2 = limits_by_iqr(data2, col, scale)
+    bb1, _bb2, _qb2 = limits_by_iqr(data1, col, scale)
+    _ba1, ba2, _qa2 = limits_by_iqr(data2, col, scale)
 
     return bb1, ba2  # the [LB, UB]
 
@@ -544,7 +544,7 @@ def get_adjusted_boxplot(alist, col, scale):
     if not alist:
         return 0, 0, 0, 0, 0
 
-    iqr, q1, med, q3 = get_quarts(alist, col)
+    _iqr, q1, med, q3 = get_quarts(alist, col)
 
     nt = len(alist)
     trim = 0.25  # use 10% of data on both sides
@@ -555,8 +555,8 @@ def get_adjusted_boxplot(alist, col, scale):
     data2 = alist[n3:]
     #    print data1, '<br>',data2, '<br>'
 
-    bb1, bb2, qb2 = limits_by_iqr(data1, col, scale)
-    ba1, ba2, qa2 = limits_by_iqr(data2, col, scale)
+    bb1, _bb2, _qb2 = limits_by_iqr(data1, col, scale)
+    _ba1, ba2, _qa2 = limits_by_iqr(data2, col, scale)
 
     return bb1, q1, med, q3, ba2
 
@@ -937,7 +937,7 @@ def sorted_copy(alist):
 
 
 ############################################################
-def _generate_index(str):
+def _generate_index(str):  # pylint: disable=redefined-builtin
     """
     Splits a string into alpha and numeric elements, which
     is used as an index for sorting
@@ -945,7 +945,7 @@ def _generate_index(str):
 
     index = []  # the index is built progressively
 
-    def _append(fragment, alist=index):
+    def _append(fragment, alist=index):  # pylint: disable=dangerous-default-value
         if fragment.isdigit():
             fragment = int(fragment)
         alist.append(fragment)

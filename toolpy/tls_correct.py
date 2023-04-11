@@ -88,14 +88,12 @@ def process(*files):
 
     """
 
-    global ERRLOG
-
     arg = files[0]
     if len(arg) < 2:
         usage()
 
     pdbfile, pdbdep, outfile = "", "", ""
-    opt, all_dep, dep, anis, ncs = {}, 0, 0, 0, 0  # noqa: F841
+    opt, all_dep, dep, anis, _ncs = {}, 0, 0, 0, 0  # noqa: F841
 
     for k in range(len(arg)):
         if arg[k].upper() == "-PDB" or arg[k].upper() == "-F":
@@ -122,7 +120,7 @@ def process(*files):
             outfile = arg[k + 1]
 
         elif arg[k].upper() == "-NCS":
-            # ncs = 1
+            # _ncs = 1
             pass
 
         elif arg[k].upper() == "-ALL_DEP" or arg[k].upper() == "-ALL":
@@ -161,7 +159,7 @@ def process(*files):
             pdbfile = arg[k + 1]
             if is_cif(arg[k + 1]):
                 pdbfile = cif2pdb(arg[k + 1])
-            cif = extract_tls_pdb(pdbfile)
+            extract_tls_pdb(pdbfile)
             sys.exit()
 
         elif arg[k].upper() == "-TLS2CIF":  # convert TLS to cif(sequential)
@@ -176,7 +174,7 @@ def process(*files):
             sys.exit()
 
         elif arg[k].upper() == "-NEWTLS":  # overwrite TLS group in PDB1 by pdb2
-            wk, pdb_new = get_newtls(arg[k + 1], arg[k + 2])
+            wk, _pdb_new = get_newtls(arg[k + 1], arg[k + 2])
             sys.exit()
 
         elif arg[k].upper() == "-XC":
@@ -294,13 +292,15 @@ def process(*files):
 def perror(info):
     """print error messages"""
 
+    # global ERRLOG
+
     if info not in ERRLOG:
         ERRLOG.append(info)
         print(info.strip())
 
 
 ##########################################################
-def check_tls(pdb, id):
+def check_tls(pdb, id):  # pylint: disable=redefined-builtin
     """
     id = 0, pdb is a file; id=1, pdb is a list
     """
@@ -548,7 +548,7 @@ def tlsxc_origin(pdbfile, info):
 
 
 ##########################################################
-def calc_tlsxc(nxyz, id):
+def calc_tlsxc(nxyz, id):  # pylint: disable=redefined-builtin
     """get the center of coordinate (refmac) and center of mass (phenix)"""
 
     occup = 0.0
@@ -612,7 +612,7 @@ def tls2cif(pdbfile):
         return ""
 
     fp = open(pdbfile, "rU")
-    id = "?"
+    id = "?"  # pylint: disable=redefined-builtin
     for x in fp:
         if "HEADER" in x[:6]:
             pdbid = x[62:66]
@@ -742,7 +742,7 @@ def pdbtls_2cif(pdbfile):
     for i, x in enumerate(fp):
         x = x.strip()
         if "HEADER" in x[:6]:
-            pdbid_ = x[62:66]  # noqa: F841
+            _pdbid = x[62:66]  # noqa: F841
         elif "ATOM" in x[:4] or "HETA" in x[:4]:
             break
 
@@ -845,7 +845,7 @@ def inptls_2cif(pdbfile):
     fp = open(pdbfile, "r").readlines()
 
     detail, par, res, ntls, rs, p = {}, {}, {}, 0, [], []
-    s11, s12, s13, s21, s22, s23 = "?" * 6
+    s11, _s12, _s13, _s21, s22, _s23 = "?" * 6
 
     for x in fp:
         y = x.replace("'", " ").split()
@@ -936,7 +936,7 @@ def extract_tls_pdb(pdbfile):
 
 
 ##########################################################
-def get_file_by_pdbid(pdbid_in, id):
+def get_file_by_pdbid(pdbid_in, id):  # pylint: disable=redefined-builtin
     """id==0, both pdb & sf;  id==1, only pdb; id==2, only sf;"""
 
     pdb_path = "/data/remediation-alt/ftp-v4.0/pdb/data/structures/all/pdb/"
@@ -1074,7 +1074,7 @@ def proc_tlsanl(pdbfile, outfile):
 
     wk = 0
     if os.path.exists(outfile) and os.path.getsize(outfile) > 100:
-        bigb, bval = check_bfactor(outfile)  # only show Biso status
+        bigb, _bval = check_bfactor(outfile)  # only show Biso status
         finalize_pdb(pdbfile, outfile)
         _cif = tls2cif(outfile)  # get a tls cif file  # noqa: F841
         #        print('The corrected TLS in mmCIF format = %s\n' %cif)
@@ -1138,7 +1138,7 @@ def make_ph_str(resid):
 
 
 ##########################################################
-def make_tls_str(resid, id):
+def make_tls_str(resid, id):  # pylint: disable=redefined-builtin
     """write the dic into a string for the ID format.
     for buster & phenix
     """
@@ -1230,7 +1230,7 @@ def make_ph_str_pdb(str1):
 
 
 ##########################################################
-def make_tls_str_pdb(str1, id):
+def make_tls_str_pdb(str1, id):  # pylint: disable=redefined-builtin
     """write one line string into multiple lines of PDB format
     words are not broken. (only for phenix & buster)
     """
@@ -1302,7 +1302,7 @@ def map_tls_4_buster(pdbfile, pdbdep, outfile):
 
     #    pdb_sort = reorder_pdb(dep_ref)
     #    wk, pdb_match = match_all_residues(pdbfile, pdb_sort)
-    wk, pdb_match = match_all_residues(pdbfile, dep_ref)
+    _wk, pdb_match = match_all_residues(pdbfile, dep_ref)
 
     ref2bus = convert_refmac2buster(pdb_match)
     cif = tls2cif(ref2bus)
@@ -1408,7 +1408,7 @@ def convert_refmac2buster(pdbfile):
 
 
 ##########################################################
-def convert_tls2refmac(pdbfile, id):
+def convert_tls2refmac(pdbfile, id):  # pylint: disable=redefined-builtin
     """Parse tls residue ranges and convert them into refmac.
     id=phenix:  from phenix to refmac.
     id=buster:  from buster to refmac.
@@ -1516,7 +1516,8 @@ def convert_tls2refmac(pdbfile, id):
                 fw.write("REMARK   3  BULK SOLVENT MODELLING. \n")
                 nn = 0
 
-    fw.close(), fp.close()
+    fw.close()
+    fp.close()
     print("\nTLS is converted to refmac format. Output = %s\n" % pdbnew)
     return pdbnew
 
@@ -1690,7 +1691,7 @@ def myreplace_case(before, after, ss):
 
 ##########################################################
 def get_residue_range_from_resname(ch, res, fp):
-    range = []
+    range = []  # pylint: disable=redefined-builtin
     for x in fp:
         if ("ATOM" in x[:4] or "HETA" in x[:4]) and (ch == x[20:22].strip() and res == x[17:20].lower()):
             range.append(x[22:26])
@@ -1705,11 +1706,11 @@ def get_residue_range_from_resname(ch, res, fp):
 
 
 ##########################################################
-def parse_tls_range_phenix_special(tls, chain, chain_range, fp):
+def parse_tls_range_phenix_special(tls, chain, chain_range, fp):  # pylint: disable=unused-argument
     """It involves in resname : for temp use. Modify later!"""
 
     range1 = []
-    for i, x in enumerate(tls):
+    for i, _x in enumerate(tls):
         if pattern(i, tls, "chain", "?", "and", "resname"):
             ch, resname = tls[2], tls[i + 4]
             range_t = get_residue_range_from_resname(ch, resname, fp)
@@ -1920,7 +1921,7 @@ def pattern(i, tls, *ss):
 
 
 ##########################################################
-def parse_tls_phenix_not(i, ch, tls, chain, chain_range, id):
+def parse_tls_phenix_not(i, ch, tls, chain, chain_range, id):  # pylint: disable=redefined-builtin
     """parse tls range involve NOT;
     id=0 for style 'chain F and not resid 0'
     id=1 for style 'chain F and not  not (resseq 539:581 or ..)'
@@ -1935,7 +1936,7 @@ def parse_tls_phenix_not(i, ch, tls, chain, chain_range, id):
         chain_range_not.append([n1, n2])
 
     else:
-        m, tmp_list = get_parenthetic_contents(i + 4, tls)
+        _m, tmp_list = get_parenthetic_contents(i + 4, tls)
         for i, x in enumerate(tmp_list):
             if "resid" in x:
                 n1, n2 = get_range_ph(chain_range, tmp_list[i + 1])
@@ -2178,7 +2179,8 @@ def reorder_pdb(pdbfile):
             fw1.write(x)
         else:
             fw2.write(x)
-    fw1.close(), fw2.close()
+    fw1.close()
+    fw2.close()
 
     os.system("cat %s %s %s  %s >%s" % (poly, lig1, watnew2, lig2, pdbnew))
 
@@ -2187,7 +2189,7 @@ def reorder_pdb(pdbfile):
 
 
 ##########################################################
-def sort_column_pdb(pdb, k1, k2, id):
+def sort_column_pdb(pdb, k1, k2, id):  # pylint: disable=redefined-builtin
     """Sort the columns of PDB file in order.
     id=1, sort chain for all ligand/water;
     id=2, sort residue number in order.
@@ -2295,8 +2297,8 @@ def get_tlsinp(pdbfile):
                 break
             n = n + 1
             if n == 1:
-                chain, chain_range, chain1, chain_range1, chain2, chain_range2 = chain_res_range(pdbfile)
-            range = convert_range_phenix_to_refmac(ln, chain_range)
+                _chain, chain_range, _chain1, _chain_range1, _chain2, _chain_range2 = chain_res_range(pdbfile)
+            range = convert_range_phenix_to_refmac(ln, chain_range)  # pylint: disable=redefined-builtin
             for k, v in range.items():
                 for x in v:
                     arg = "RANGE  '%s%4s.' '%s%4s.' ALL\n" % (k, x[0], k, x[1])
@@ -2375,7 +2377,8 @@ def get_tlsinp(pdbfile):
 
             fo.write("S  %8.4f %8.4f %s %s %s %s %s %s\n\n" % (S22_S11, S11_S33, S12, S13, S23, S21, S31, S32))
 
-    fr.close(), fo.close()
+    fr.close()
+    fo.close()
     return tlsinp
 
 
@@ -2577,7 +2580,7 @@ def delete_0_origin(pdbfile):
     fp = open(pdbfile, "r")
     pdb_new = pdbfile + "_000"
     fw = open(pdb_new, "w")
-    i, id, ntls, nn = 0, 0, 0, []
+    i, id, ntls, nn = 0, 0, 0, []  # pylint: disable=redefined-builtin
     for x in fp:
         nn.append(x)
         if "REMARK   3   TLS GROUP :" in x:
@@ -2614,7 +2617,8 @@ def delete_0_origin(pdbfile):
     if id > 3:
         t = "Warning: tls group (%s) is deleted, since all parameters are zero." % ntls
         perror(t)
-    fp.close(), fw.close()
+    fp.close()
+    fw.close()
     return pdb_new
 
 
@@ -2629,12 +2633,12 @@ def correct_tls(pdbfile):
     fr = open(pdbfile, "r")
 
     res_range = chain_res_range(pdbfile)  # dic with chainID and residue range
-    print("Polymer= " % res_range[1])
-    print("Ligands= " % res_range[3])
-    print("Waters = " % res_range[5])
+    print("Polymer= ", res_range[1])
+    print("Ligands= ", res_range[3])
+    print("Waters = ", res_range[5])
 
     range1 = {}
-    _prog, remark_b, tls_b, anisou, ntls = "?" * 5  # noqa: F841
+    _prog, _remark_b, _tls_b, _anisou, ntls = "?" * 5  # noqa: F841
     for line in fr:
         if "REMARK   3   PROGRAM     :" in line and "REFMAC" in line:
             _prog = "REFMAC"  # noqa: F841
@@ -2642,7 +2646,7 @@ def correct_tls(pdbfile):
         elif "NUMBER OF TLS GROUPS  :" in line:
             ntls = get_value_after_id(line, ":")
         elif "ATOM RECORD CONTAINS RESIDUAL B FACTORS ONLY" in line:
-            tls_b_ = "RESID"  # noqa: F841
+            _tls_b = "RESID"  # noqa: F841
         elif "ATOM RECORD CONTAINS SUM OF TLS AND RESIDUAL B " in line:
             _tls_b = "FULL"  # noqa: F841
         elif "REMARK   3  U VALUES      : RESIDUAL ONLY" in line:
@@ -2651,7 +2655,7 @@ def correct_tls(pdbfile):
             _remark_b = "FULL"  # noqa: F841
 
         elif "ANISOU" in line[0:6]:
-            anisou_ = "T"  # noqa: F841
+            _anisou = "T"  # noqa: F841
 
         elif "REMARK   3    RESIDUE RANGE : " in line:
             tmp = line.split(":")[1].strip().split()
@@ -2662,7 +2666,7 @@ def correct_tls(pdbfile):
 
                 if tmp[0] not in range1.keys() and tmp[0] != " ":
                     range1[tmp[0]] = []
-                range1[tmp[0]].append([int(eval(tmp[1])), int(eval(tmp[3]))])
+                range1[tmp[0]].append([int(eval(tmp[1])), int(eval(tmp[3]))])  # pylint: disable=eval-used
                 line = correct_tls_overlap(pdbfile, line, range1)
                 if len(line) > 0:
                     line = correct_tls_overlap(pdbfile, line, range1)
@@ -2690,9 +2694,9 @@ def correct_tls(pdbfile):
 
 
 ##########################################################
-def correct_tls_overlap(pdbfile, line, range):
+def correct_tls_overlap(pdbfile, line, range):  # pylint: disable=unused-argument,redefined-builtin
     tmp = line.split(":")[1].split()
-    ch, n1, n2 = tmp[0], int(eval(tmp[1])), int(eval(tmp[3]))  # from current line
+    ch, n1, n2 = tmp[0], int(eval(tmp[1])), int(eval(tmp[3]))    # pylint: disable=eval-used  # from current line
     n = 0
     ln = line
     # print(ch, range[ch])
@@ -2805,7 +2809,7 @@ def correct_residue_range(ntls, pdbfile, line, res_range):
 
 
 ##########################################################
-def correct_default(line1, line, chain_range, pdbfile):
+def correct_default(line1, line, chain_range, pdbfile):  # pylint: disable=unused-argument
     for x, y in chain_range.items():
         rrange = "%4s%6d%9s%6d" % (x, y[0], x, y[1])
         tmp = line[:29] + rrange + "   \n"
@@ -2891,7 +2895,7 @@ def correct_range(pdbfile, res1, res2, ln, ch, res_range):
 
 
 ##########################################################
-def check_res_range(pdbfile, ln, chain, ch, n1, n2, id):
+def check_res_range(pdbfile, ln, chain, ch, n1, n2, id):  # pylint: disable=unused-argument,redefined-builtin
     line = ln
     if n1 <= n2:
         id, nd = 0, n2 - n1
@@ -2911,7 +2915,7 @@ def check_res_range(pdbfile, ln, chain, ch, n1, n2, id):
 
 
 ##########################################################
-def make_two_newline(pdbfile, resn_in, ln, ch, n1, n2, id):
+def make_two_newline(pdbfile, resn_in, ln, ch, n1, n2, id):  # pylint: disable=redefined-builtin,unused-argument
     resn = sorted(resn_in)
     # print(resn, ch, n1, n2, id)
     k2, nn = 0, len(resn) - 1
@@ -2930,7 +2934,7 @@ def make_two_newline(pdbfile, resn_in, ln, ch, n1, n2, id):
 
 
 ##########################################################
-def make_new_line(pdbfile, ln, ch, n1, n2, id):
+def make_new_line(pdbfile, ln, ch, n1, n2, id):  # pylint: disable=redefined-builtin,unused-argument
     """return a new line with correct residue ranges.
     id==1, corrected. id==0, original
     """
@@ -2945,7 +2949,7 @@ def make_new_line(pdbfile, ln, ch, n1, n2, id):
 
 
 ##########################################################
-def new_number(chain, n1, n2, id):
+def new_number(chain, n1, n2, id):  # pylint: disable=redefined-builtin
     if id == 1:  # increase the number
         n = n1
         for i in range(n2 - n1 + 1):
@@ -2971,7 +2975,7 @@ def new_number(chain, n1, n2, id):
 
 
 ##########################################################
-def get_value_after_id(line, id):
+def get_value_after_id(line, id):  # pylint: disable=redefined-builtin
     """get value after a given id"""
 
     if id not in line:
@@ -2984,7 +2988,7 @@ def get_value_after_id(line, id):
 
 
 ##########################################################
-def get_one_string_after_id(line, id):
+def get_one_string_after_id(line, id):  # pylint: disable=redefined-builtin
     """get one value after a given id"""
 
     if id not in line:
@@ -3017,7 +3021,7 @@ def chain_res_range_list(pdb):
     separate poly-peptide and hetatoms. Input a list.
     """
 
-    pdb1, pdb2, pdb3, pdb4 = separate_pdb_list(pdb)
+    pdb1, pdb2, pdb3, _pdb4 = separate_pdb_list(pdb)
     chain, chain_range = chain_res_list(pdb1, 0)  # poly-peptide
     chain1, chain_range1 = chain_res_list(pdb2, 0)  # ligands
     chain2, chain_range2 = chain_res_list(pdb3, 1)  # waters
@@ -3058,7 +3062,9 @@ def separate_pdb(pdbfile):
         else:
             fw2.write(fr[i])
 
-    fw1.close(), fw2.close(), fw3.close()
+    fw1.close()
+    fw2.close()
+    fw3.close()
     return pdb1, pdb2, pdb3
 
 
@@ -3138,19 +3144,21 @@ def separate_pdb_old(pdbfile):
             fw1.write(fr[i])
         else:
             fw2.write(fr[i])
-            """
-            if 'HOH' in fr[i]:
-                fw3.write(fr[i])
-            else:
-                fw2.write(fr[i])
-            """
+            # """
+            # if 'HOH' in fr[i]:
+            #     fw3.write(fr[i])
+            # else:
+            #     fw2.write(fr[i])
+            # """
 
-    fw1.close(), fw2.close(), fw3.close()
+    fw1.close()
+    fw2.close()
+    fw3.close()
     return pdb1, pdb2, pdb3
 
 
 ##########################################################
-def str_after_id(line, id):
+def str_after_id(line, id):  # pylint: disable=redefined-builtin
     """get string after a given id"""
 
     if id not in line:
@@ -3165,7 +3173,7 @@ def str_after_id(line, id):
 
 
 ##########################################################
-def chain_res(pdbfile, id):
+def chain_res(pdbfile, id):  # pylint: disable=redefined-builtin
     """use dic to contain chain-ID and residue range
     id=0: not include waters; id=1: include waters.
     """
@@ -3203,7 +3211,7 @@ def chain_res(pdbfile, id):
 
 
 ##########################################################
-def chain_res_list(fr, id):
+def chain_res_list(fr, id):  # pylint: disable=redefined-builtin
     """use dic to contain chain-ID and residue range, pdb is a list.
     id=0: not include waters; id=1: include waters.
     """
@@ -3299,7 +3307,8 @@ def replace_lines(pdbfile, rcsbpdb, str1, str2):
                 fw.write(y)
                 n = n + 1
 
-    fr.close(), fw.close()
+    fr.close()
+    fw.close()
     delete_file(pdb1, pdb2)
     if n == 0:
         print("Error! Nothing added to the pdb=" + pdbfile)
@@ -3386,7 +3395,7 @@ def compare_two_pdb(pdbfile, pdbdep):
 
 
 ##########################################################
-def match_pdb(tlsd, xx, pdb, dep, record, tmp):
+def match_pdb(tlsd, xx, pdb, dep, record, tmp):  # pylint: disable=unused-argument
     """use the deposited residue range to match the processed residue range.
     it is possible to have one-->many since ligands and waters are assigned
     to the closer chains.
@@ -3415,7 +3424,7 @@ def match_pdb(tlsd, xx, pdb, dep, record, tmp):
         print("Error! No correspondence between dep/proc ligands.")
         return
 
-    chain, ch_range = chain_res(file, 1)
+    _chain, ch_range = chain_res(file, 1)
     n = tlsd.index(xx)
 
     print("original=%s" % xx.strip())
@@ -3440,7 +3449,7 @@ def match_ligand_water(pdbfile, pdbdep):
         return
 
     print("Matching tls groups between %s and %s ..." % (pdbfile, pdbdep))
-    pdb1, pdb2, pdb3 = separate_pdb(pdbfile)  # polymer & ligand
+    pdb1, pdb2, _pdb3 = separate_pdb(pdbfile)  # polymer & ligand
     if os.path.getsize(pdb2) < 1:
         print("Warning: no ligands in pdb=" + pdbfile)
         delete_file(pdb1, pdb2)
@@ -3449,8 +3458,8 @@ def match_ligand_water(pdbfile, pdbdep):
     pdb = open(pdb2, "r").readlines()  # for ligands
     dep = open(pdbdep, "r").readlines()
 
-    pch, pch_range, pch1, pch1_range = chain_res_range(pdbfile)
-    dch, dch_range, dch1, dch1_range = chain_res_range(pdbdep)
+    pch, _pch_range, pch1, _pch1_range, _pch2, _pch2_range = chain_res_range(pdbfile)
+    _dch, _dch_range, _dch1, _dch1_range, _dch2, _dch2_range = chain_res_range(pdbdep)
 
     str1 = "REMARK   3  TLS DETAILS"
     str2 = "REMARK   3  BULK SOLVENT MODELLING."
@@ -3500,7 +3509,8 @@ def match_ligand_water(pdbfile, pdbdep):
             for y in tlsd:
                 fw.write(y)
 
-    fr.close(), fw.close()
+    fr.close()
+    fw.close()
 
 
 ##########################################################
@@ -3540,7 +3550,7 @@ def check_and_correct_tls(pdbfile):
     out = pdbfile + "__TLSNEW"
     fw = open(out, "w")
 
-    tls_ = get_tls_group(fp)  # noqa: F841
+    _tls = get_tls_group(fp)  # noqa: F841
 
     xyzt = []
     for x in fp:
@@ -3558,7 +3568,7 @@ def check_and_correct_tls(pdbfile):
                 continue
             res = x.split(":")[1].split()
             xyz = get_xyz_tls(res, xyzt)  # get xyz in the tls range
-            pdb1, pdb2, pdb3, pdb4 = separate_pdb_list(xyz)  # poly/lig/water
+            pdb1, pdb2, pdb3, _pdb4 = separate_pdb_list(xyz)  # poly/lig/water
             if pdb1:
                 write_tmp(pdbfile, fw, x, pdb1, res[0])
             if pdb2:
@@ -3575,7 +3585,7 @@ def check_and_correct_tls(pdbfile):
 
 ##########################################################
 def write_tmp(pdbfile, fw, x, pdb1, ch):
-    chain1, chain_range1 = chain_res_list(pdb1, 1)
+    _chain1, chain_range1 = chain_res_list(pdb1, 1)
     if ch not in chain_range1.keys():
         return
     n1, n2 = chain_range1[ch][0], chain_range1[ch][1]
@@ -3716,7 +3726,7 @@ def get_newtls_cif(pdbfile):
 
     npdb = runmaxit(ncif, 2, " ")  # new PDB file with HOH/Lig change
 
-    wk, pdbf = match_all_residues(npdb, pdbfile)
+    _wk, pdbf = match_all_residues(npdb, pdbfile)
     tlscif = tls2cif(pdbf)
 
     # delete_file(cif)
@@ -3737,7 +3747,7 @@ def match_all_residues(pdbfile, pdbdep):
     the residue ranges in the processed pdb (pdbfile).
     """
 
-    chain1, chain1_range, chain2, chain2_range, chain3, chain3_range = chain_res_range(pdbfile)
+    _chain1, chain1_range, _chain2, _chain2_range, _chain3, _chain3_range = chain_res_range(pdbfile)
     # n=compare_two_pdb(pdbfile, pdbdep)
     # if n==0 : return 0, pdbdep
 
@@ -3779,7 +3789,7 @@ def match_all_residues(pdbfile, pdbdep):
 
     # for s in tlsd_new:   print(s.strip())
 
-    pdbp, pdbf = remove_pdb_item(pdbfile, 0, "tls")  # get a list & file
+    _pdbp, pdbf = remove_pdb_item(pdbfile, 0, "tls")  # get a list & file
     str1 = "REMARK   3  TLS DETAILS"
     newpdb = insert_lines2file(pdbf, str1, tlsd_new)
     delete_file(pdbd, pdbf)
@@ -3788,7 +3798,7 @@ def match_all_residues(pdbfile, pdbdep):
 
 
 ##########################################################
-def remove_pdb_item(fp_inp, id, item):
+def remove_pdb_item(fp_inp, id, item):  # pylint: disable=redefined-builtin
     """
     id=0, fp is a pdbfile & return a pdb file;
     id=1, fp is a list of pdb & return two lists
@@ -3829,7 +3839,7 @@ def remove_pdb_item(fp_inp, id, item):
 
 
 ##########################################################
-def insert_lines2file(file, str, lines):
+def insert_lines2file(file, str, lines):  # pylint: disable=redefined-builtin
     """lines (a list) are inserted in the file after string (str)"""
 
     newpdb = file + "_newtls"
@@ -3842,13 +3852,14 @@ def insert_lines2file(file, str, lines):
             for y in lines:
                 fw.write(y)
 
-    fr.close(), fw.close()
+    fr.close()
+    fw.close()
 
     return newpdb
 
 
 ##########################################################
-def search_rcsb_dir(pdbfile, outfile, id):
+def search_rcsb_dir(pdbfile, outfile, id):  # pylint: disable=redefined-builtin
     """Search all the files in deposited directory (/an../prot/rcsb0.)
     to find the correct TLS group
     """
@@ -3922,7 +3933,7 @@ def get_code_id(pdbfile):
 
 
 ##########################################################
-def get_deposited_file(rcsbid, id):
+def get_deposited_file(rcsbid, id):  # pylint: disable=redefined-builtin
     """get all the deposited pdb files or cif file by pdb_extract"""
 
     p1, p2 = "/annotation/prot/" + rcsbid, "/annotation/ndb/" + rcsbid
@@ -3970,7 +3981,7 @@ def runmaxit(file, option, other):
         os.system(arg)
 
         tls1, juck1 = remove_pdb_item(file, 0, "tls")  # original cif
-        tls2, pdb2 = remove_pdb_item(nfile, 0, "tls")
+        _tls2, pdb2 = remove_pdb_item(nfile, 0, "tls")
 
         str1 = "REMARK   3  TLS DETAILS"
         newpdb = insert_lines2file(pdb2, str1, tls1)
@@ -4031,16 +4042,16 @@ def new_ligand_water_residue_number(pdbfile):
     pdb = open(pdbfile, "r").readlines()
     pdb1, pdb2, pdb3, pdb4 = separate_pdb_list(pdb)  # poly/lig/water
 
-    chain1, chain_range1 = chain_res_list(pdb1, 0)  # poly
+    _chain1, chain_range1 = chain_res_list(pdb1, 0)  # poly
     chain2, chain_range2 = chain_res_list(pdb2, 0)  # ligand
-    chain3, chain_range3 = chain_res_list(pdb3, 1)  # wat
+    _chain3, chain_range3 = chain_res_list(pdb3, 1)  # wat
 
     out = pdbfile + "_new_num"
     fw = open(out, "w")
 
-    print("Polymer=" % chain_range1)
-    print("Ligands=" % chain_range2)
-    print("Waters =" % chain_range3)
+    print("Polymer=", chain_range1)
+    print("Ligands=", chain_range2)
+    print("Waters =", chain_range3)
 
     nn = 0
     for x in chain2.values():
@@ -4094,7 +4105,7 @@ def anisotropy(pdbfile):
 
             u = [float(ln[27:35]), float(ln[35:42]), float(ln[42:49]), float(ln[49:56]), float(ln[56:63]), float(ln[63:70])]
             u = [x * 0.0001 for x in u]
-            id, e1, e2, e3 = eigenvalue(u)
+            id, e1, e2, e3 = eigenvalue(u)  # pylint: disable=redefined-builtin
             if id == 0 or e2 == 0:
                 print("Warning: anisotropy can not be determined for " + atom)
                 continue
@@ -4114,7 +4125,8 @@ def anisotropy(pdbfile):
     #    fo.write('below is sorted\n')
     #    for ln in sorted: fo.write(ln)
 
-    fo.close(), fr.close()
+    fo.close()
+    fr.close()
     if n == 0:
         print("Eigenvalues not calculated, since no ANISOU records in " + pdbfile)
         os.remove(output)

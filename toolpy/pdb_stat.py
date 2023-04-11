@@ -2,7 +2,7 @@
 # #!/usr/bin/env python
 
 
-import MySQLdb  # in apps-centos-5/python-2.6.6/bin/python (if not work, check .tcshrc)
+import MySQLdb    # pylint: disable=import-error # in apps-centos-5/python-2.6.6/bin/python (if not work, check .tcshrc)
 import os
 import sys
 import math
@@ -21,7 +21,7 @@ def proc_stat(args):
 
     ddir = initial()
 
-    for i, x in enumerate(args):
+    for _i, x in enumerate(args):
         if "-growth" in x:
             print("processing pdb-growth..")
             pdb_growth_fit(ddir, 1)  # fit growth data, 1 by polynom. 2 by exp.
@@ -56,8 +56,8 @@ def get_stat():
 
 ######################################################
 def initial():
-    global SQL  # do not change it.
-    global YEAR
+    # global SQL  # do not change it.
+    # global YEAR
     ddir = "DAT_STORE/"  # create a dir to hold all the data/graphs
     os.system("mkdir %s" % ddir)  # make a fold to hold all the data
     get_html(ddir)  # A html file to link all the stat
@@ -152,12 +152,12 @@ def plot_pop_new(ddir, x, data_all, ncol):
 
     fpop = ddir + item + "_pop.data"  # for data populations
     data_pop(fpop, data, shell, 1)  # 2th column
-    avg, dev, mini, maxi = util.mean_dev(data, 1)
+    avg, dev, _mini, _maxi = util.mean_dev(data, 1)
 
     title = "Population of %s (mean=%.2f; sigma=%.2f; entry=%d)" % (x[0], avg, dev, len(data))
     xrange, yrange, bar, rot, key, style = "", "", 0, 1, 0, 0
     plot = """plot '%s' using 3:xtic(1) lc rgb "blue" ,'' u 0:3:4 with labels offset 0, 0.5""" % (fpop)
-    gnuscr, gnuout = gnu_plot(fpop, title, xrange, yrange, xlabel, ylabel, bar, rot, key, style, plot)
+    _gnuscr, _gnuout = gnu_plot(fpop, title, xrange, yrange, xlabel, ylabel, bar, rot, key, style, plot)
 
     print("plot_pop=%s %s %s" % (x[1], len(data1), len(data_all)))
 
@@ -186,7 +186,7 @@ def plot_corr_new(ddir, x, data_all, nc1, nc2, shell):
     title = "Mean value of %s in each %s bin" % (x[2], x[1])
     xrange, yrange, bar, rot, key, style = "", "", 1, 1, 0, 0
     plot = """plot '%s' using 4:5:xtic(1) lc rgb "green" """ % (fcorr)
-    gnuscr, gnuout = gnu_plot(fcorr, title, xrange, yrange, xlabel, ylabel, bar, rot, key, style, plot)
+    _gnuscr, _gnuout = gnu_plot(fcorr, title, xrange, yrange, xlabel, ylabel, bar, rot, key, style, plot)
 
     print("plot_corr=%s %s %s" % (x[1], len(data1), len(data_all)))
 
@@ -245,13 +245,13 @@ def plot_pop(ddir, x, data_all):
 
     fpop = ddir + cate + "_" + token + "_pop.data"  # for data populations
     data_pop(fpop, data, shell, 1)  # 2th column
-    avg, dev, mini, maxi = util.mean_dev(data, 1)
+    avg, dev, _mini, _maxi = util.mean_dev(data, 1)
 
     title = "population of _%s.%s (mean=%.2f; dev=%.2f; entry=%d)" % (x[0], x[1], avg, dev, len(data))
     xrange, yrange, xlabel, ylabel = "", "", "data range of %s" % x[1], "number of entry"
     bar, rot, key, style = 0, 1, 0, 0
     plot = """plot '%s' using 3:xtic(1) lc rgb "blue" ,'' u 0:3:4 with labels offset 0, 0.5""" % (fpop)
-    gnuscr, gnuout = gnu_plot(fpop, title, xrange, yrange, xlabel, ylabel, bar, rot, key, style, plot)
+    _gnuscr, _gnuout = gnu_plot(fpop, title, xrange, yrange, xlabel, ylabel, bar, rot, key, style, plot)
 
     print("plot_pop= %s %s %s %s" % (x[1], i, len(data1), len(data_all)))
 
@@ -288,7 +288,7 @@ def plot_corr(ddir, x, data_all):
     xrange, yrange, xlabel, ylabel = "", "", "resolution", "%s" % x[1]
     bar, rot, key, style = 1, 1, 0, 0
     plot = """plot '%s' using 4:5:xtic(1) lc rgb "green" """ % (fcorr)
-    gnuscr, gnuout = gnu_plot(fcorr, title, xrange, yrange, xlabel, ylabel, bar, rot, key, style, plot)
+    _gnuscr, _gnuout = gnu_plot(fcorr, title, xrange, yrange, xlabel, ylabel, bar, rot, key, style, plot)
 
     print("plot_corr= %s %s %s %s" % (x[1], i, len(data1), len(data_all)))
 
@@ -335,7 +335,7 @@ def get_file_from_sql(cate, outf):
 
 
 ######################################################
-def do_sql_gen(outf, tabs, type):
+def do_sql_gen(outf, tabs, type):  # pylint: disable=redefined-builtin
     """This is a general script to do SQL for any tables items
     outf: the output file from doing sql
     tabs: the tables (format : [[cate, item1,..], [cate, item1,..] ...]
@@ -356,7 +356,7 @@ def do_sql_gen(outf, tabs, type):
     cate = []
     sel = ""
     for x in tabs:
-        for i, y in enumerate(x):
+        for i, _y in enumerate(x):
             if i == 0:
                 cate.append(x[0])
             else:
@@ -822,7 +822,7 @@ def data_pop(fpop, fp, shell, col):
     for i in range(nstep):
         if i == 0:
             continue
-        bin = (shell[i - 1] + shell[i]) / 2.0
+        bin = (shell[i - 1] + shell[i]) / 2.0  # pylint: disable=redefined-builtin
         n = 0
         for k in range(j, nt):
             if fp[k][col] > shell[i]:
@@ -860,7 +860,7 @@ def data_corr(fcorr, fp, shell, col):
         if i == 0:
             continue
 
-        bin = (shell[i - 1] + shell[i]) / 2.0
+        bin = (shell[i - 1] + shell[i]) / 2.0  # pylint: disable=redefined-builtin
         n, subg = 0, []
         for k in range(j, nt):
             if fp[k][col] > shell[i]:
@@ -1114,7 +1114,7 @@ def tls_growth(ddir):
       """ % (
         plot_file
     )
-    gnuscr, gnuout = gnu_plot(plot_file, title, xrange, yrange, xlabel, ylabel, bar, rot, key, style, plot)
+    _gnuscr, _gnuout = gnu_plot(plot_file, title, xrange, yrange, xlabel, ylabel, bar, rot, key, style, plot)
 
 
 ######################################################################
@@ -1159,7 +1159,7 @@ def rfactor_other(ddir):
         prog[3],
     )
     file = ddir + "software_rwork.data"
-    gnuscr, gnuout = gnu_plot(file, title, xrange, yrange, xlabel, ylabel, bar, rot, key, style, plot)
+    _gnuscr, _gnuout = gnu_plot(file, title, xrange, yrange, xlabel, ylabel, bar, rot, key, style, plot)
 
     # below is to plot the Rwork & Rfree together using previous data
     # If the file name changed, fwork/ffree must also change!!
@@ -1176,7 +1176,7 @@ def rfactor_other(ddir):
         ffree,
     )
     file = ddir + "rwork-rfree.data"
-    gnuscr, gnuout = gnu_plot(file, title, xrange, yrange, xlabel, ylabel, bar, rot, key, style, plot)
+    _gnuscr, _gnuout = gnu_plot(file, title, xrange, yrange, xlabel, ylabel, bar, rot, key, style, plot)
 
 
 ###################################################################
@@ -1260,7 +1260,7 @@ def twin_info(ddir):
         """ % (
         fyear
     )
-    gnuscr, gnuout = gnu_plot(fyear, title, xrange, yrange, xlabel, ylabel, bar, rot, key, style, plot)
+    _gnuscr, _gnuout = gnu_plot(fyear, title, xrange, yrange, xlabel, ylabel, bar, rot, key, style, plot)
 
     title = "Space group population with twinned data (percentage on each bar)"
     xrange, yrange, xlabel, ylabel = "", "", "space group", "number of twinned entry"
@@ -1269,7 +1269,7 @@ def twin_info(ddir):
         """ % (
         fsg
     )
-    gnuscr, gnuout = gnu_plot(fsg, title, xrange, yrange, xlabel, ylabel, bar, rot, key, style, plot)
+    _gnuscr, _gnuout = gnu_plot(fsg, title, xrange, yrange, xlabel, ylabel, bar, rot, key, style, plot)
 
     title = "Comparison of R_work between twinned and non-twinned entry"
     xrange, yrange, xlabel, ylabel = "", "", "resolution", "R_work"
@@ -1280,7 +1280,7 @@ def twin_info(ddir):
         fcorr_reg,
     )
     file = ddir + "twin-nontwin-rwork.data"
-    gnuscr, gnuout = gnu_plot(file, title, xrange, yrange, xlabel, ylabel, bar, rot, key, style, plot)
+    _gnuscr, _gnuout = gnu_plot(file, title, xrange, yrange, xlabel, ylabel, bar, rot, key, style, plot)
 
 
 ######################################################################
@@ -1300,7 +1300,7 @@ def rfact_reso_growth(ddir):
 
     out = "%srfact_reso_growth.all" % ddir
 
-    plot_data = out + ".data"
+    plot_data = out + ".data"  # pylint: disable=redefined-outer-name
     plot_data1 = out + "_res.data"
     fw = open(plot_data, "w")
     fw1 = open(plot_data1, "w")
@@ -1345,7 +1345,7 @@ order by d.date_original,  r.ls_d_res_high \
         tmp = [".", ".  . ", ".  .", ".  . ", ".  .", ".  ."]
         tmp1 = [0, 0, 0, 0, 0, 0]
         if rf:
-            for k, z in enumerate(reso):
+            for k, _z in enumerate(reso):
                 if k == 0:
                     continue
                 t1 = []
@@ -1357,7 +1357,7 @@ order by d.date_original,  r.ls_d_res_high \
 
                 avg, dev = -1.0, -1.0
                 if t1:
-                    avg, dev, mini, maxi = util.mean_dev(t1, 0)
+                    avg, dev, _mini, _maxi = util.mean_dev(t1, 0)
                     tmp[k] = "%.3f %.3f " % (avg, dev)
 
                     p1 = 100 * float(ns) / nrf
@@ -1389,7 +1389,7 @@ order by d.date_original,  r.ls_d_res_high \
         plot_data
     )
 
-    gnuscr, gnuout = gnu_plot(plot_data, title, xrange, yrange, xlabel, ylabel, bar, rot, key, style, plot)
+    _gnuscr, _gnuout = gnu_plot(plot_data, title, xrange, yrange, xlabel, ylabel, bar, rot, key, style, plot)
 
     title = "The mean growth rate of resolution in each year"
     xrange, yrange, xlabel, ylabel = "", "", "Year", "percentage of resolution"
@@ -1401,7 +1401,7 @@ order by d.date_original,  r.ls_d_res_high \
         plot_data1
     )
 
-    gnuscr, gnuout = gnu_plot(plot_data1, title, xrange, yrange, xlabel, ylabel, bar, rot, key, style, plot)
+    _gnuscr, _gnuout = gnu_plot(plot_data1, title, xrange, yrange, xlabel, ylabel, bar, rot, key, style, plot)
 
 
 ######################################################################
@@ -1465,7 +1465,7 @@ def do_string_stat(ddir):
             file1
         )
 
-        gnuscr, gnuout = gnu_plot(file1, title, xrange, yrange, xlabel, ylabel, bar, rot, key, style, plot)
+        _gnuscr, _gnuout = gnu_plot(file1, title, xrange, yrange, xlabel, ylabel, bar, rot, key, style, plot)
 
         title = "Growth of %s.%s" % (x[0], x[1])
         xrange, yrange, xlabel, ylabel = "", "", "Year", "PDB entry"
@@ -1480,7 +1480,7 @@ def do_string_stat(ddir):
             first5[3],
             first5[4],
         )
-        gnuscr, gnuout = gnu_plot(file2, title, xrange, yrange, xlabel, ylabel, bar, rot, key, style, plot)
+        _gnuscr, _gnuout = gnu_plot(file2, title, xrange, yrange, xlabel, ylabel, bar, rot, key, style, plot)
 
         title = "Growth rate of %s.%s" % (x[0], x[1])
         xrange, yrange, xlabel, ylabel = "", "", "Year", "percentage (%)"
@@ -1496,7 +1496,7 @@ def do_string_stat(ddir):
             first5[4],
         )
         file3 = file2 + "_rate"
-        gnuscr, gnuout = gnu_plot(file3, title, xrange, yrange, xlabel, ylabel, bar, rot, key, style, plot)
+        _gnuscr, _gnuout = gnu_plot(file3, title, xrange, yrange, xlabel, ylabel, bar, rot, key, style, plot)
 
 
 ######################################################################
@@ -1662,10 +1662,10 @@ and r.structure_id in (%s) order by r.ls_d_res_high \
     col = 1  # data is in this column
     for x in four:
         data_clean = clean_data(x, col)
-        data, outlier = filter_data(data_clean, shell, col)
+        data, _outlier = filter_data(data_clean, shell, col)
         fpop = x + "_pop.data"  # for data populations
         data_pop(fpop, data, shell, col)
-        avg, dev, mini, maxi = util.mean_dev(data, col)
+        avg, dev, _mini, _maxi = util.mean_dev(data, col)
         #        print(avg, dev, mini, maxi)
 
         res.append(avg)
@@ -1694,7 +1694,7 @@ and r.structure_id in (%s) order by r.ls_d_res_high \
 
     fpop = ddir + "resolution_entity"
 
-    gnuscr, gnuout = gnu_plot(fpop, title, xrange, yrange, xlabel, ylabel, bar, rot, key, style, plot)
+    _gnuscr, _gnuout = gnu_plot(fpop, title, xrange, yrange, xlabel, ylabel, bar, rot, key, style, plot)
 
 
 ######################################################################
@@ -1748,7 +1748,7 @@ def pdb_growth_fit(ddir, idd):
 
 
 ######################################################
-def fit_growth(ddir, idd, file, type):
+def fit_growth(ddir, idd, file, type):  # pylint: disable=unused-argument,redefined-builtin
     """fit/plot data (from  2000 to 2011)
     ddir: the directory to hold graphs and data
     file: the data files
@@ -1771,7 +1771,7 @@ def fit_growth(ddir, idd, file, type):
     bar, rot, key, style = 0, 1, 1, 0
 
     plot = """plot '%s' using 1:3:xtic(1) t "predicted" with linespoints ,'' u 1:2 t "%s"  with boxes""" % (pout, type)
-    gnuscr, gnuout = gnu_plot(pout, title, xrange, yrange, xlabel, ylabel, bar, rot, key, style, plot)
+    _gnuscr, _gnuout = gnu_plot(pout, title, xrange, yrange, xlabel, ylabel, bar, rot, key, style, plot)
 
 
 ######################################################
@@ -1905,7 +1905,7 @@ def fiteq(a, b, c, x, x0, idd):
 
 
 ############################################################
-def pdb_growth(start, end, type):
+def pdb_growth(start, end, type):  # pylint: disable=redefined-builtin
     """get growth of PDB using sql"""
 
     out = "pdb_growth.txt"

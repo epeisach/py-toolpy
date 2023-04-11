@@ -132,10 +132,10 @@ def process(*files):
 
     for k in range(narg):
         if arg[k].lower() == "-list":
-            flist_ = arg[k + 1]  # noqa: F841
+            _flist = arg[k + 1]  # noqa: F841
 
         elif arg[k].lower() == "-anis":
-            ani_ = anisotropy(arg[k + 1])  # noqa: F841
+            anisotropy(arg[k + 1])
 
         elif arg[k].lower() == "-stat":  # cal dev,mean,outliers, plot frequncy.
             statis.get_pop_corr(arg[k + 1], k + 2, narg, arg)
@@ -153,7 +153,7 @@ def process(*files):
             sys.exit()
 
         elif arg[k].lower() == "-scale":
-            ani_ = calc_scale_matrix(arg[k + 1])  # noqa: F841
+            calc_scale_matrix(arg[k + 1])
 
         # elif arg[k].lower() == "-contact":
         #     id = 0  # using crystal frame
@@ -162,24 +162,24 @@ def process(*files):
         #     ani = get_contact(arg[k + 1], id)
 
         elif arg[k].lower() == "-dev":
-            min, max, mean, std, num = mean_std("", arg[k + 1], int(arg[k + 2]))
+            _min, _max, _mean, _std, _num = mean_std("", arg[k + 1], int(arg[k + 2]))  # pylint: disable=redefined-builtin
 
         elif arg[k].lower() == "-bin":
             t1, t2, t3, t4 = arg[k + 1], int(arg[k + 2]), int(arg[k + 3]), int(arg[k + 4])
-            data_ = mean_std_bin("", t1, t2, t3, t4)  # noqa: F841
+            _data = mean_std_bin("", t1, t2, t3, t4)  # noqa: F841
 
         elif arg[k].lower() == "-changeb":
             if len(arg) > 6:
                 t = [float(arg[k + i + 2]) for i in range(6)]
             else:
                 t = [float(arg[k + 2])]
-            newpdb_ = change_bfactor(arg[k + 1], t)  # noqa: F841
+            _newpdb = change_bfactor(arg[k + 1], t)  # noqa: F841
 
         elif arg[k].lower() == "-res":  # rename residue number from start
             if len(arg) == 3:  # automatic
-                newpdb_ = residue_num_seq(arg[k + 1])  # noqa: F841
+                residue_num_seq(arg[k + 1])
             elif len(arg) > 3:
-                newpdb_ = residue_num_seq(arg[k + 1], arg[k + 2])  # noqa: F841
+                residue_num_seq(arg[k + 1], arg[k + 2])
 
         elif arg[k].lower() == "-pick":
             pickup_item_from_firstfile(arg[k + 1], arg[k + 2])
@@ -275,7 +275,7 @@ def process(*files):
         #    find_blob_density(coord, sf)
 
         elif arg[k].lower() == "-blob_map":
-            coord, map = arg[k + 1], arg[k + 2]
+            coord, map = arg[k + 1], arg[k + 2]  # pylint: disable=redefined-builtin
             find_blob_density_map(coord, map)
 
         elif arg[k].lower() == "-map":  # display map by FWT/PHWT
@@ -334,7 +334,7 @@ def plot_file(file_in):
 
 
 ##########################################################
-def get_285_by_mr(pdbfile, sffile, id):
+def get_285_by_mr(pdbfile, sffile, id):  # pylint: disable=redefined-builtin
     """coord. not in the crystal frame. Using MR to get new xyz and align the
     original xyz to the new_xyz to get Matrix(X0). Then generate Remark 285.
     """
@@ -418,7 +418,7 @@ REMARK 285 BIOMT RECORDS TO THE COORDINATES, AS SHOWN BELOW.
 
 
 ##########################################################
-def find_blob_density_map(coord, map):
+def find_blob_density_map(coord, map):  # pylint: disable=redefined-builtin
     """id=0, map=SF; id=1, map=map"""
 
     # xyzlim=find_xyzlimt(0, coord)
@@ -442,7 +442,7 @@ eof
     fw.close()
 
     os.system("chmod +x %s; ./%s" % (scr, scr))
-    nblob_ = get_blobs(coord, density)  # noqa: F841
+    _nblob = get_blobs(coord, density)  # noqa: F841
 
 
 # print xyzlim
@@ -474,7 +474,7 @@ def find_xyzlimt(extend, coord):
         #  print('Error: %s can not be found in the coordinate. try a new id. ' %(compid))
         return xyzlim
 
-    frac, orth = util.frac_orth_matrix(cell)  # get matrix
+    frac, _orth = util.frac_orth_matrix(cell)  # get matrix
     xx_min, xx_max = min(xx) - extend, max(xx) + extend
     yy_min, yy_max = min(yy) - extend, max(yy) + extend
     zz_min, zz_max = min(zz) - extend, max(zz) + extend
@@ -498,7 +498,7 @@ def get_blobs(coord, density):
             blob.append(x)
             continue
         # print x.strip()
-        id = 0
+        id = 0  # pylint: disable=redefined-builtin
         for y in fp2:
             if "ATOM" not in y[:4] and "HETA" not in y[:4]:
                 continue
@@ -533,7 +533,7 @@ def get_pdbredo_report(pdbid):
 
     url = "http://www.cmbi.ru.nl/pdb_redo"
 
-    id = pdbid.lower()
+    id = pdbid.lower()  # pylint: disable=redefined-builtin
     pdb = "%s_final.pdb" % id
     mtz = "%s_final.mtz" % id
     fpdb = "%s/%s/%s/%s" % (url, id[1:3], id, pdb)
@@ -551,7 +551,7 @@ def gen_vtf_report(xyzf, sff, outf):
 
     wwpdf_exec = "/net/techusers/hyang/prog-vari/bin/wwpdb-val.sh "
 
-    cif = xyzf
+    cif = xyzf  # pylint: disable=redefined-outer-name
     sf = sff
     if not util.is_cif(xyzf):
         cif = util.pdb2cif(xyzf)  # a pdbfile
@@ -565,7 +565,7 @@ def gen_vtf_report(xyzf, sff, outf):
 
 
 ##########################################################
-def get_vtf_report(pdbid, id):
+def get_vtf_report(pdbid, id):  # pylint: disable=redefined-builtin
     """extract wwpdf report from database."""
 
     url = "http://ftp.wwpdb.org/pub/pdb/validation_reports"
@@ -654,19 +654,21 @@ def separate_pdb(pdbfile):
             fw1.write(fr[i])
         else:
             fw2.write(fr[i])
-            """
-            if 'HOH' in fr[i]:
-                fw3.write(fr[i])
-            else:
-                fw2.write(fr[i])
-            """
+            # """
+            # if 'HOH' in fr[i]:
+            #     fw3.write(fr[i])
+            # else:
+            #     fw2.write(fr[i])
+            # """
 
-    fw1.close(), fw2.close(), fw3.close()
+    fw1.close()
+    fw2.close()
+    fw3.close()
     return pdb1, pdb2, pdb3
 
 
 ##########################################################
-def chain_res(pdbfile, id):
+def chain_res(pdbfile, id):  # pylint: disable=redefined-builtin
     """use dic to contain chain-ID and residue range
     id=0: not include waters; id=1: include waters.
     """
@@ -774,7 +776,7 @@ def chain_res_list(pdb):
     for x in pdb:
         if "ATOM" in x[:4] or "HETA" in x[:4]:
             m = m + 1
-            id0 = id = x[21:26]
+            id0 = id = x[21:26]  # pylint: disable=redefined-builtin
             if m < n:
                 id = pdb[m][21:26]
             tmp.append(x)
@@ -791,7 +793,7 @@ def chain_res_list(pdb):
 def sort_column(pdb, k1, k2):
     """Sort the columns (from k1 to k2) of PDB file in order."""
 
-    id = 1
+    id = 1  # pylint: disable=redefined-builtin
     n, d, pdbn = 0, [], []
     for ln in pdb:
         n = n + 1
@@ -1103,7 +1105,7 @@ def reso_shell(min1, max1, nstep):
     shell = []
     y1 = min1
 
-    for x in range(nstep):
+    for _x in range(nstep):
         y2 = y1 + step
         shell.append([y1, y2])
         y1 = y2
@@ -1117,7 +1119,7 @@ def mean_std(list1, file, n):
     id=0, use file; id=1, use list1
     """
 
-    id = len(list1)
+    id = len(list1)  # pylint: disable=redefined-builtin
     res = []
     if id == 0:
         fp = open(file, "r").readlines()
@@ -1172,7 +1174,7 @@ def anisotropy(pdbfile):
 
             u = [float(ln[27:35]), float(ln[35:42]), float(ln[42:49]), float(ln[49:56]), float(ln[56:63]), float(ln[63:70])]
             u = [x * 0.0001 for x in u]
-            id, e1, e2, e3 = eigenvalue(u)
+            id, e1, e2, e3 = eigenvalue(u)  # pylint: disable=redefined-builtin
             if id == 0 or e2 == 0:
                 print("Warning: anisotropy can not be determined for " + atom)
                 continue
@@ -1192,7 +1194,8 @@ def anisotropy(pdbfile):
     #    fo.write('below is sorted\n')
     #    for ln in sorted: fo.write(ln)
 
-    fo.close(), fr.close()
+    fo.close()
+    fr.close()
     if n == 0:
         print("Error: No ANISOU records in " + pdbfile)
         os.remove(output)
@@ -1353,7 +1356,8 @@ def find_atom_on_symm(pdbfile, mode):
         else:
             fw.write(x)
 
-    fp.close(), fw.close()
+    fp.close()
+    fw.close()
 
     return site
 
@@ -1524,7 +1528,8 @@ def remove_h_atom(pdbfile):
         if ("ATOM " in x[:6] or "HETATM" in x[:6]) and " H" in x[76:78]:
             continue
         fw.write(x)
-    fp.close(), fw.close()
+    fp.close()
+    fw.close()
     print("The output file without H atoms = %s" % out)
 
 

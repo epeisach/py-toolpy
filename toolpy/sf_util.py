@@ -104,7 +104,7 @@ def sf_quality(sffile, pdbfile):
 
 
 ##########################################################
-def plot_items(plot_data, id, title, xlabel, ylabel, plot):
+def plot_items(plot_data, id, title, xlabel, ylabel, plot):  # pylint: disable=redefined-builtin
     """ """
 
     if id == "twin":
@@ -183,7 +183,7 @@ def test_sf_content(file_inp):
     or mmcif with maps (id==3)
     """
 
-    id = 0
+    id = 0  # pylint: disable=redefined-builtin
     n = 0
     fp = open(file_inp, "r")
     for x in fp:
@@ -209,7 +209,7 @@ def get_file_type(inp1, inp2):
     """determine xyz or sf from inp1&2"""
 
     xyz_inp, sf_inp = "", ""
-    id = test_sf_content(inp1)
+    id = test_sf_content(inp1)  # pylint: disable=redefined-builtin
     if id:  # inp1 is SF file (cif or mtz)
         xyz_inp, sf_inp = inp2, inp1
     else:
@@ -224,7 +224,7 @@ def get_file_type(inp1, inp2):
 def display_map_coot(inp1, inp2):
     """display map by coordinate & SF file."""
 
-    mtz, xyz_inp, sf_inp = get_file_type(inp1, inp2)
+    _mtz, xyz_inp, sf_inp = get_file_type(inp1, inp2)
 
     if not xyz_inp or not sf_inp:
         print("Error: File must be in MTZ or a mmcif file having _refln.pdbx_FWT\n")
@@ -282,7 +282,7 @@ def get_freer_flag(inp1, inp2):
             sf = cif2cif_sf(flist, i)
 
         dcc_out = prog.run_dcc(xyz_inp, sf, " -one -no_xtriage ")
-        val, rep, notls, tls, bstat, prog_rep = parse.values_from_dcc(dcc_out)
+        val, _rep, notls, _tls, _bstat, _prog_rep = parse.values_from_dcc(dcc_out)
         if (notls[3] - notls[2]) > 0.02:
             mark = "*"
         arg = " %2d  %s %s\n" % (i, val, mark)
@@ -350,7 +350,7 @@ def test_swap_fi(pdb, sf):
 
     dcc_out = prog.run_dcc(pdb, sf, "")
     rep, calc1 = parse.val_from_dcc(dcc_out)
-    (swap, sf_new) = swap_sf(sf)
+    (_swap, sf_new) = swap_sf(sf)
     shutil.move(dcc_out, dcc_out + "_orig")
 
     dcc_out = prog.run_dcc(pdb, sf_new, "")

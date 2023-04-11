@@ -104,7 +104,7 @@ def remove_bad_water(pdbfile, sffile):
         if ("ATOM" in x[:4] or "HETATM" in x[:6] or "ANISOU" in x[:6]) and x[17:20] == "HOH":
             ch1, seq1 = x[20:22].strip(), x[22:26].strip()
 
-            id = 0
+            id = 0  # pylint: disable=redefined-builtin
             for i, y in enumerate(comp):
                 if "HOH" in y and ch1 == ch[i] and seq1 == seq[i]:
                     id = 1
@@ -123,8 +123,8 @@ def remove_bad_water(pdbfile, sffile):
 
 
 #######################################################
-def add_water(mtz, pdbfile, id):
-    map = mtz + "TMP.map"
+def add_water(mtz, pdbfile, id):  # pylint: disable=redefined-builtin
+    map = mtz + "TMP.map"  # pylint: disable=redefined-builtin
     wpdb = ""
     if id == 1:  # mFo-dFc map
         mtz2map(mtz, pdbfile, map, "FO_FC")
@@ -169,7 +169,7 @@ def add_water(mtz, pdbfile, id):
 
 
 #######################################################
-def water_peak(map, pdbfile, rms):
+def water_peak(map, pdbfile, rms):  # pylint: disable=redefined-builtin
     npdb = pdbfile + "_water_TMP"
     peak = map + ".PEAK"
     print("Adding waters ...")
@@ -296,9 +296,9 @@ def scale_matrix(pdbfile):
     cg, sg = math.cos(gamma), math.sin(gamma)
 
     vol = math.sqrt(1 - ca**2 - cb**2 - cg**2 + 2 * ca * cb * cg)
-    sc1 = [sc11, sc12, sc13] = [1 / a, -cg / (a * sg), (ca * cg - cb) / (a * vol * sg)]
-    sc2 = [sc21, sc22, sc23] = [0, 1.0 / (b * sg), (cb * cg - ca) / (b * vol * sg)]
-    sc3 = [sc31, sc32, sc33] = [0, 0, sg / (c * vol)]
+    sc1 = [_sc11, _sc12, _sc13] = [1 / a, -cg / (a * sg), (ca * cg - cb) / (a * vol * sg)]
+    sc2 = [_sc21, _sc22, _sc23] = [0, 1.0 / (b * sg), (cb * cg - ca) / (b * vol * sg)]
+    sc3 = [_sc31, _sc32, _sc33] = [0, 0, sg / (c * vol)]
 
     return sc1, sc2, sc3
 

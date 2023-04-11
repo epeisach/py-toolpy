@@ -51,7 +51,7 @@ def shift_xyz_into_unitcell(file, outfile):
         return
 
     fw = open(outfile, "w")
-    frac, orth = util.frac_orth_matrix(info["cell"])  # get conversion matrix
+    _frac, orth = util.frac_orth_matrix(info["cell"])  # get conversion matrix
     xf, yf, zf = info["xf"], info["yf"], info["zf"]
     xfn, yfn, zfn = shift_xyz2unit(xf, yf, zf)
 
@@ -100,7 +100,7 @@ def shift_xyz_into_unitcell(file, outfile):
             symbol,
         )
         fw.write(ss)
-        id = "%4s%1s%3s%2s%4d" % (atom_o, alt, comp, ch, nres)
+        id = "%4s%1s%3s%2s%4d" % (atom_o, alt, comp, ch, nres)  # pylint: disable=redefined-builtin
         if anis[id]:
             ss1 = "ANISOU%5s %s%s" % (natm, id, anis[id])
             fw.write(ss1)
@@ -137,7 +137,7 @@ def check_special_position(file, outfile, out_xyz):
         fw.close()
         return
 
-    frac, orth = util.frac_orth_matrix(info["cell"])  # get conversion matrix
+    frac, _orth = util.frac_orth_matrix(info["cell"])  # get conversion matrix
     m1, m2, m3 = get_sym_operator(info, "frac")  # get sym
 
     xf, yf, zf = info["xf"], info["yf"], info["zf"]
@@ -251,7 +251,7 @@ def check_special_position(file, outfile, out_xyz):
 
 
 ##################################################################
-def check_coord_occ(info, id, nfold):
+def check_coord_occ(info, id, nfold):  # pylint: disable=redefined-builtin
     """From symmetry fold to occupancy"""
 
     occ = {2: 0.5, 3: 0.33, 4: 0.25, 6: 0.16}
@@ -268,15 +268,15 @@ def check_coord_occ(info, id, nfold):
     elif info["occ"][na] == 1.0:
         ss = "Error: Wrong occupancy of %.2f for atom %s, change to (%.2f).\n" % (info["occ"][na], atom, occ[nfold])
 
-    """
+    # """
 
-    if (occ[nfold] < info['occ'][na]) :
-        if info['occ'][na] >=1.0:
-            ss='Error: Wrong occupancy for atom (%s : id=%s_%s_%s). change to (%.2f)\n' %(info['atom'][na], info['chain'][na],info['comp'][na], info['nres'][na], occ[nfold])
+    # if (occ[nfold] < info['occ'][na]) :
+    #     if info['occ'][na] >=1.0:
+    #         ss='Error: Wrong occupancy for atom (%s : id=%s_%s_%s). change to (%.2f)\n' %(info['atom'][na], info['chain'][na],info['comp'][na], info['nres'][na], occ[nfold])
 
-        else:
-            ss='Warning: Wrong occupancy for atom (%s : id=%s_%s_%s).\n' %(info['atom'][na], info['chain'][na],info['comp'][na], info['nres'][na])
-    """
+    #     else:
+    #         ss='Warning: Wrong occupancy for atom (%s : id=%s_%s_%s).\n' %(info['atom'][na], info['chain'][na],info['comp'][na], info['nres'][na])
+    # """
     return occ[nfold], ss
 
 
@@ -703,7 +703,7 @@ def data_from_cif(file, info):
     info["mtrix"] = mtrix
 
     if cell and cell[0] > 1.1:
-        frac, orth = util.frac_orth_matrix(cell)  # get matrix
+        frac, _orth = util.frac_orth_matrix(cell)  # get matrix
         n = len(info["x"])
         xf, yf, zf, mtr = [], [], [], []
         for i in range(n):
@@ -744,7 +744,7 @@ def data_from_pdb(file, info):
         elif "ATOM" in v[:4] or "HETA" in v[:4]:
             break
 
-    frac, orth = util.frac_orth_matrix(cell)  # get matrix
+    frac, _orth = util.frac_orth_matrix(cell)  # get matrix
 
     fp.seek(0)
     nat = 0
@@ -1064,11 +1064,11 @@ def check_atom(chain, nres, comp, atom, symbol, alt, ins, x, y, z, mtr, atom_cel
                     continue
                 elif n1 == n2 and chain[n] == chain[m] and ins[n] != ins[m]:  # same residue, but diff ins.
                     d = math.sqrt((x[n] - x[m]) ** 2 + (y[n] - y[m]) ** 2 + (z[n] - z[m]) ** 2)
-                    if abs(n - m) < 18 and check_atom_pair(n, m, atom, d):
+                    if abs(n - m) < 18 and check_atom_pair(n, m, atom, d):  # pylint: disable=arguments-out-of-order
                         continue
                 elif chain[n] == chain[m] and abs(n1 - n2) == 1:
                     d = math.sqrt((x[n] - x[m]) ** 2 + (y[n] - y[m]) ** 2 + (z[n] - z[m]) ** 2)
-                    if check_atom_pair(n, m, atom, d):
+                    if check_atom_pair(n, m, atom, d):  # pylint: disable=arguments-out-of-order
                         continue
                 elif (0 < n < natom - 1 and nres[n] != nres[n - 1] and nres[n] != nres[n + 1] and (comp[n] != "HOH" and comp[n] != "DOD")) or (
                     0 < m < natom - 1 and nres[m] != nres[m - 1] and nres[m] != nres[m + 1] and (comp[m] != "HOH" and comp[m] != "DOD")
@@ -1086,7 +1086,7 @@ def check_atom(chain, nres, comp, atom, symbol, alt, ins, x, y, z, mtr, atom_cel
 
 
 ##################################################################
-def check_atom_alt(chain, nres, comp, atom, symbol, alt, ins, x, y, z, mtr, atom_cell_1, atom_cell_2, natom):
+def check_atom_alt(chain, nres, comp, atom, symbol, alt, ins, x, y, z, mtr, atom_cell_1, atom_cell_2, natom):  # pylint: disable=unused-argument
     """selecting atoms with close distance with cutoff"""
 
     alldis = []
@@ -1131,7 +1131,7 @@ def check_atom_test(chain, nres, comp, atom, alt, ins, x, y, z):
 
 
 ##################################################################
-def check_atom_fes(chain, nres, comp, atom, symbol, alt, ins, x, y, z, mtr, atom_cell_1, atom_cell_2, natom):
+def check_atom_fes(chain, nres, comp, atom, symbol, alt, ins, x, y, z, mtr, atom_cell_1, atom_cell_2, natom):  # pylint: disable=unused-argument
     """selecting atoms with close distance with cutoff (tmp)"""
 
     cutoff = 4.0  # limit

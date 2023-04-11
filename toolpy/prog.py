@@ -24,7 +24,7 @@ def sf_convertor(pdbfile, sffile, type1, add):
 
 
 ##########################################################
-def run_phenix(pdbfile, sffile, type1):
+def run_phenix(pdbfile, sffile, type1):  # pylint: disable=unused-argument
     """run sub-programs of phenix"""
     outfile = "phenix__%s.log" % type1
     util.delete_file(outfile)
@@ -38,7 +38,7 @@ def run_phenix(pdbfile, sffile, type1):
 
 
 ##########################################################
-def run_ccp4(pdbfile, sffile, type1):
+def run_ccp4(pdbfile, sffile, type1):  # pylint: disable=unused-argument
     """run sub-programs of CCP4"""
     outfile = "ccp4__%s.log" % type1
     util.delete_file(outfile)
@@ -58,7 +58,7 @@ def run_ccp4(pdbfile, sffile, type1):
 
 
 ##########################################################
-def run_ccp4_contact(pdbfile, id):
+def run_ccp4_contact(pdbfile, id):  # pylint: disable=redefined-builtin,unused-argument
     """Refer contact:  http://www.ccp4.ac.uk/dist/html/contact.html
     <mode> = ALL,IRES,ISUB,IMOL or AUTO (default: MODE IRES).
     """
@@ -73,7 +73,8 @@ def run_ccp4_contact(pdbfile, id):
         if "ENDMDL" in x[:6]:
             break
         fw.write(x)
-    fw.close(), fp.close()
+    fw.close()
+    fp.close()
 
     log = pdbfile + "_contact"
     script = """#!/bin/csh
@@ -96,7 +97,7 @@ def run_ccp4_contact(pdbfile, id):
     fwc.write(script)
     fwc.close()
 
-    arg = 'egrep "\[.*\]"  %s |wc -l' % log  # noqa: W605
+    arg = 'egrep "\[.*\]"  %s |wc -l' % log  # noqa: W605  # pylint: disable=anomalous-backslash-in-string
     ncont = int(os.popen(arg).read())
     print("Crystal contacts for %s (<%.1fA) = %d" % (pdbfile, limit, ncont))
     util.delete_file(pdb_new)
